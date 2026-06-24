@@ -75,53 +75,115 @@
             <!-- Seat Map -->
             <div class="card border-0 shadow-sm rounded-4">
                 <div class="card-body p-4">
-                    <h5 class="fw-bold mb-3"><i class="bi bi-grid-3x3-gap me-2"></i>Seat Layout</h5>
+                    <h5 class="fw-bold mb-3"><i class="bi bi-bus-front me-2"></i>Seat Layout</h5>
 
                     <!-- Legend -->
-                    <div class="d-flex gap-4 mb-4 flex-wrap">
-                        <div class="d-flex align-items-center">
-                            <span class="seat-legend available me-2"></span>
-                            <small>Available</small>
+                    <div class="d-flex gap-3 mb-4 flex-wrap align-items-center">
+                        <div class="d-flex align-items-center gap-1">
+                            <span class="seat-legend available"></span>
+                            <small class="text-muted">Available</small>
                         </div>
-                        <div class="d-flex align-items-center">
-                            <span class="seat-legend booked me-2"></span>
-                            <small>Booked</small>
+                        <div class="d-flex align-items-center gap-1">
+                            <span class="seat-legend booked"></span>
+                            <small class="text-muted">Booked</small>
                         </div>
-                        <div class="d-flex align-items-center">
-                            <span class="seat-legend selected me-2"></span>
-                            <small>Your Selection</small>
-                        </div>
-                        <div class="d-flex align-items-center">
-                            <span class="badge bg-secondary me-2">🚪</span>
-                            <small>Driver/Front</small>
+                        <div class="d-flex align-items-center gap-1">
+                            <span class="seat-legend selected"></span>
+                            <small class="text-muted">Your Selection</small>
                         </div>
                     </div>
 
-                    <!-- Seat Grid -->
-                    <div class="seat-grid-container text-center mb-3">
-                        <div class="mb-3 p-2 bg-secondary text-white rounded-2 d-inline-block px-5">
-                            <i class="bi bi-person-workspace"></i> FRONT (Driver)
-                        </div>
-                    </div>
+                    <!-- Bus Body -->
+                    <div class="bus-body mx-auto">
 
-                    <div class="seat-grid mx-auto" style="max-width: 350px;">
+                        <!-- Windshield / Driver row -->
+                        <div class="bus-front">
+                            <div class="driver-area">
+                                <i class="bi bi-person-workspace"></i>
+                                <span>Driver</span>
+                            </div>
+                            <div class="door-area">
+                                <i class="bi bi-door-open"></i>
+                                <span>Door</span>
+                            </div>
+                        </div>
+
+                        <!-- Column headers -->
+                        <div class="seat-col-header">
+                            <div class="col-label-group">
+                                <span class="col-lbl">A</span>
+                                <span class="col-lbl">B</span>
+                            </div>
+                            <div class="aisle-gap"></div>
+                            <div class="col-label-group">
+                                <span class="col-lbl">C</span>
+                                <span class="col-lbl">D</span>
+                            </div>
+                            <div class="row-num-spacer"></div>
+                        </div>
+
+                        <!-- Seat rows -->
                         {% for row in seat_grid %}
-                        <div class="d-flex justify-content-center gap-2 mb-2">
-                            {% for seat in row %}
-                            <button type="button"
-                                    class="seat-btn {% if seat.booked %}booked{% else %}available{% endif %}"
-                                    data-seat="{{ seat.id }}"
-                                    {% if seat.booked %}disabled title="Booked"{% endif %}
-                                    onclick="selectSeat('{{ seat.id }}', this)">
-                                {{ seat.id }}
-                            </button>
-                            {% endfor %}
+                        <div class="bus-row">
+                            <!-- Left pair: A, B -->
+                            <div class="seat-pair">
+                                {% if row|length > 0 %}
+                                <button type="button"
+                                        class="seat-btn {% if row.0.booked %}booked{% else %}available{% endif %}"
+                                        data-seat="{{ row.0.id }}"
+                                        {% if row.0.booked %}disabled title="Booked"{% endif %}
+                                        onclick="selectSeat('{{ row.0.id }}', this)">
+                                    <span class="seat-headrest"></span>
+                                    <span class="seat-label">{{ row.0.id }}</span>
+                                </button>
+                                {% endif %}
+                                {% if row|length > 1 %}
+                                <button type="button"
+                                        class="seat-btn {% if row.1.booked %}booked{% else %}available{% endif %}"
+                                        data-seat="{{ row.1.id }}"
+                                        {% if row.1.booked %}disabled title="Booked"{% endif %}
+                                        onclick="selectSeat('{{ row.1.id }}', this)">
+                                    <span class="seat-headrest"></span>
+                                    <span class="seat-label">{{ row.1.id }}</span>
+                                </button>
+                                {% endif %}
+                            </div>
+
+                            <!-- Aisle + Row number -->
+                            <div class="aisle-gap">
+                                <span class="row-number">{{ forloop.counter }}</span>
+                            </div>
+
+                            <!-- Right pair: C, D -->
+                            <div class="seat-pair">
+                                {% if row|length > 2 %}
+                                <button type="button"
+                                        class="seat-btn {% if row.2.booked %}booked{% else %}available{% endif %}"
+                                        data-seat="{{ row.2.id }}"
+                                        {% if row.2.booked %}disabled title="Booked"{% endif %}
+                                        onclick="selectSeat('{{ row.2.id }}', this)">
+                                    <span class="seat-headrest"></span>
+                                    <span class="seat-label">{{ row.2.id }}</span>
+                                </button>
+                                {% endif %}
+                                {% if row|length > 3 %}
+                                <button type="button"
+                                        class="seat-btn {% if row.3.booked %}booked{% else %}available{% endif %}"
+                                        data-seat="{{ row.3.id }}"
+                                        {% if row.3.booked %}disabled title="Booked"{% endif %}
+                                        onclick="selectSeat('{{ row.3.id }}', this)">
+                                    <span class="seat-headrest"></span>
+                                    <span class="seat-label">{{ row.3.id }}</span>
+                                </button>
+                                {% endif %}
+                            </div>
                         </div>
                         {% endfor %}
-                    </div>
 
-                    <div class="text-center mt-3 p-2 bg-light rounded-3">
-                        <i class="bi bi-arrow-down"></i> REAR
+                        <!-- Rear -->
+                        <div class="bus-rear">
+                            <i class="bi bi-arrow-bar-down me-1"></i> REAR
+                        </div>
                     </div>
                 </div>
             </div>
@@ -211,49 +273,175 @@
 </div>
 
 <style>
-.seat-btn {
-    width: 48px;
-    height: 48px;
-    border: 2px solid #dee2e6;
-    border-radius: 8px;
-    font-size: 0.8rem;
+/* ── Bus body wrapper ── */
+.bus-body {
+    max-width: 300px;
+    background: #f8f9fa;
+    border: 3px solid #adb5bd;
+    border-radius: 24px 24px 14px 14px;
+    padding: 0 12px 16px;
+    position: relative;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+}
+
+/* ── Front section (driver + door) ── */
+.bus-front {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #343a40;
+    color: #fff;
+    border-radius: 20px 20px 0 0;
+    padding: 10px 16px;
+    margin: 0 -12px 12px;
+    font-size: 0.78rem;
     font-weight: 600;
+    letter-spacing: 0.03em;
+}
+.driver-area, .door-area {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    font-size: 0.72rem;
+}
+.driver-area i, .door-area i { font-size: 1.2rem; }
+
+/* ── Column headers ── */
+.seat-col-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 6px;
+    padding: 0 2px;
+}
+.col-label-group {
+    display: flex;
+    gap: 6px;
+    flex: 1;
+}
+.col-lbl {
+    width: 44px;
+    text-align: center;
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: #6c757d;
+    text-transform: uppercase;
+}
+.row-num-spacer { width: 24px; }
+
+/* ── Each seat row ── */
+.bus-row {
+    display: flex;
+    align-items: center;
+    margin-bottom: 7px;
+    gap: 0;
+}
+.seat-pair {
+    display: flex;
+    gap: 6px;
+    flex: 1;
+}
+
+/* ── Aisle ── */
+.aisle-gap {
+    width: 28px;
+    min-width: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.row-number {
+    font-size: 0.65rem;
+    color: #adb5bd;
+    font-weight: 700;
+}
+
+/* ── Seat button ── */
+.seat-btn {
+    width: 44px;
+    height: 50px;
+    border: none;
+    border-radius: 6px 6px 5px 5px;
     cursor: pointer;
-    transition: all 0.2s;
+    transition: all 0.18s;
     background: #fff;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 0;
+    overflow: hidden;
+    position: relative;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.12);
 }
-.seat-btn.available {
-    border-color: #198754;
-    color: #198754;
+/* headrest strip at top */
+.seat-headrest {
+    display: block;
+    width: 100%;
+    height: 10px;
+    border-radius: 5px 5px 0 0;
+    flex-shrink: 0;
 }
-.seat-btn.available:hover {
-    background: #198754;
-    color: #fff;
-    transform: scale(1.1);
+.seat-label {
+    font-size: 0.7rem;
+    font-weight: 700;
+    line-height: 1;
+    margin-top: auto;
+    margin-bottom: 6px;
 }
-.seat-btn.booked {
-    background: #dc3545;
-    color: #fff;
-    border-color: #dc3545;
-    cursor: not-allowed;
-    opacity: 0.7;
+
+/* States */
+.seat-btn.available .seat-headrest  { background: #198754; }
+.seat-btn.available                 { border: 2px solid #198754; color: #198754; }
+.seat-btn.available:hover           { background: #d1f0e0; transform: scale(1.07); }
+
+.seat-btn.booked .seat-headrest     { background: #dc3545; }
+.seat-btn.booked                    { border: 2px solid #dc3545; color: #dc3545;
+                                      cursor: not-allowed; opacity: 0.65; }
+.seat-btn.booked .seat-label::after { content: '✕'; }
+.seat-btn.booked .seat-label        { font-size: 0; } /* hide text, show ✕ only */
+
+.seat-btn.selected .seat-headrest   { background: #0d6efd; }
+.seat-btn.selected                  { border: 2px solid #0d6efd !important;
+                                      background: #e7f1ff !important;
+                                      color: #0d6efd !important;
+                                      transform: scale(1.08);
+                                      box-shadow: 0 0 10px rgba(13,110,253,0.35); }
+
+/* ── Rear bar ── */
+.bus-rear {
+    text-align: center;
+    font-size: 0.75rem;
+    color: #6c757d;
+    font-weight: 600;
+    margin-top: 10px;
+    border-top: 2px dashed #dee2e6;
+    padding-top: 8px;
+    letter-spacing: 0.05em;
 }
-.seat-btn.selected {
-    background: #0d6efd !important;
-    color: #fff !important;
-    border-color: #0d6efd !important;
-    transform: scale(1.1);
-    box-shadow: 0 0 10px rgba(13,110,253,0.5);
-}
+
+/* ── Legend squares ── */
 .seat-legend {
-    width: 20px;
-    height: 20px;
-    border-radius: 4px;
+    width: 22px;
+    height: 26px;
+    border-radius: 4px 4px 3px 3px;
     display: inline-block;
+    position: relative;
 }
-.seat-legend.available { border: 2px solid #198754; background: #fff; }
-.seat-legend.booked { background: #dc3545; }
-.seat-legend.selected { background: #0d6efd; }
+.seat-legend::before {
+    content: '';
+    display: block;
+    height: 7px;
+    border-radius: 3px 3px 0 0;
+    position: absolute;
+    top: 0; left: 0; right: 0;
+}
+.seat-legend.available { border: 2px solid #198754; }
+.seat-legend.available::before { background: #198754; }
+.seat-legend.booked    { border: 2px solid #dc3545; opacity: 0.65; }
+.seat-legend.booked::before    { background: #dc3545; }
+.seat-legend.selected  { border: 2px solid #0d6efd; background: #e7f1ff; }
+.seat-legend.selected::before  { background: #0d6efd; }
 </style>
 {% endblock %}
 
