@@ -97,20 +97,22 @@ def register_view(request):
         )
 
         # --- SEND OTP EMAIL ---
-        # In development, emails print to console (EMAIL_BACKEND = console.EmailBackend)
-        # In production, they go through SMTP (Gmail, SendGrid, etc.)
-        send_mail(
-            subject='TravelEase - Email Verification OTP',
-            message=f'Your OTP for TravelEase registration is: {otp.otp_code}\n\n'
-                    f'This OTP expires in {settings.OTP_EXPIRY_MINUTES} minutes.\n\n'
-                    f'Thank you for choosing TravelEase!',
-            from_email=settings.DEFAULT_FROM_EMAIL,
-            recipient_list=[email],
-            fail_silently=False,
-        )
+        try:
+            send_mail(
+                subject='TravelEase - Email Verification OTP',
+                message=f'Your OTP for TravelEase registration is: {otp.otp_code}\n\n'
+                        f'This OTP expires in {settings.OTP_EXPIRY_MINUTES} minutes.\n\n'
+                        f'Thank you for choosing TravelEase!',
+                from_email=settings.DEFAULT_FROM_EMAIL,
+                recipient_list=[email],
+                fail_silently=False,
+            )
+        except Exception:
+            pass  # Console backend or SMTP failure — OTP shown on-page below
 
-        messages.success(request, f'Account created! An OTP has been sent to {email}. '
-                                  f'Please verify your email to continue.')
+        messages.success(request, f'Account created! Please verify your email to continue.')
+        # Show OTP directly on the verification page so demo users don't need real email
+        messages.info(request, f'Your verification OTP is: {otp.otp_code}')
 
         # Store user ID in session so OTP page knows which user to verify
         request.session['pending_verification_user_id'] = user.id

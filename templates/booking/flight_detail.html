@@ -54,42 +54,92 @@
                 </div>
             </div>
 
-            <!-- Seat Map (Flight: 6 columns per row) -->
+            <!-- Seat Map (Flight: A-side 3 per row | aisle | B-side 3 per row) -->
             <div class="card border-0 shadow-sm rounded-4">
                 <div class="card-body p-4">
-                    <h5 class="fw-bold mb-3"><i class="bi bi-grid-3x3-gap me-2"></i>Seat Layout</h5>
-                    <div class="d-flex gap-4 mb-4 flex-wrap">
-                        <div class="d-flex align-items-center">
-                            <span class="seat-legend-fl available me-2"></span>
-                            <small>Available</small>
+                    <h5 class="fw-bold mb-3"><i class="bi bi-airplane me-2"></i>Seat Layout</h5>
+
+                    <!-- Legend -->
+                    <div class="d-flex gap-3 mb-4 flex-wrap align-items-center">
+                        <div class="d-flex align-items-center gap-1">
+                            <span class="fl-legend available"></span>
+                            <small class="text-muted">Available</small>
                         </div>
-                        <div class="d-flex align-items-center">
-                            <span class="seat-legend-fl booked me-2"></span>
-                            <small>Booked</small>
+                        <div class="d-flex align-items-center gap-1">
+                            <span class="fl-legend booked"></span>
+                            <small class="text-muted">Booked</small>
                         </div>
-                        <div class="d-flex align-items-center">
-                            <span class="seat-legend-fl selected me-2"></span>
-                            <small>Your Selection</small>
+                        <div class="d-flex align-items-center gap-1">
+                            <span class="fl-legend selected"></span>
+                            <small class="text-muted">Your Selection</small>
                         </div>
                     </div>
 
-                    <div class="text-center mb-3 p-2 bg-secondary text-white rounded-2 d-inline-block px-5">
-                        <i class="bi bi-person-workspace"></i> COCKPIT
-                    </div>
+                    <!-- Cabin body -->
+                    <div class="cabin-body mx-auto">
 
-                    <div class="seat-grid mx-auto" style="max-width: 450px;">
+                        <!-- Cockpit header -->
+                        <div class="cabin-front">
+                            <div class="cockpit-area">
+                                <i class="bi bi-airplane-fill"></i>
+                                <span>Cockpit</span>
+                            </div>
+                            <div class="cabin-door">
+                                <i class="bi bi-door-open"></i>
+                                <span>Door</span>
+                            </div>
+                        </div>
+
+                        <!-- Column headers -->
+                        <div class="fl-col-header">
+                            <div class="fl-side-label">A Side</div>
+                            <div class="fl-aisle-gap"></div>
+                            <div class="fl-side-label">B Side</div>
+                            <div class="fl-rownum-spacer"></div>
+                        </div>
+
+                        <!-- Seat rows -->
                         {% for row in seat_grid %}
-                        <div class="d-flex justify-content-center gap-1 mb-1">
-                            {% for seat in row %}
-                            <button type="button"
-                                    class="seat-btn-fl {% if seat.booked %}booked{% else %}available{% endif %}"
-                                    {% if seat.booked %}disabled{% endif %}
-                                    onclick="selectFlightSeat('{{ seat.id }}', this)">
-                                {{ seat.id }}
-                            </button>
-                            {% endfor %}
+                        <div class="fl-row">
+                            <!-- Left triple: A-side -->
+                            <div class="fl-triple">
+                                {% for seat in row.left %}
+                                <button type="button"
+                                        class="fl-seat-btn {% if seat.booked %}booked{% else %}available{% endif %}"
+                                        data-seat="{{ seat.id }}"
+                                        {% if seat.booked %}disabled title="Booked"{% endif %}
+                                        onclick="selectFlightSeat('{{ seat.id }}', this)">
+                                    <span class="fl-headrest"></span>
+                                    <span class="fl-label">{{ seat.id }}</span>
+                                </button>
+                                {% endfor %}
+                            </div>
+
+                            <!-- Aisle + row number -->
+                            <div class="fl-aisle-gap">
+                                <span class="fl-rownum">{{ row.row_num }}</span>
+                            </div>
+
+                            <!-- Right triple: B-side -->
+                            <div class="fl-triple">
+                                {% for seat in row.right %}
+                                <button type="button"
+                                        class="fl-seat-btn {% if seat.booked %}booked{% else %}available{% endif %}"
+                                        data-seat="{{ seat.id }}"
+                                        {% if seat.booked %}disabled title="Booked"{% endif %}
+                                        onclick="selectFlightSeat('{{ seat.id }}', this)">
+                                    <span class="fl-headrest"></span>
+                                    <span class="fl-label">{{ seat.id }}</span>
+                                </button>
+                                {% endfor %}
+                            </div>
                         </div>
                         {% endfor %}
+
+                        <!-- Rear -->
+                        <div class="cabin-rear">
+                            <i class="bi bi-arrow-bar-down me-1"></i> REAR
+                        </div>
                     </div>
                 </div>
             </div>
@@ -165,21 +215,164 @@
 </div>
 
 <style>
-.seat-btn-fl {
-    width: 45px; height: 45px;
-    border: 2px solid #dee2e6; border-radius: 6px;
-    font-size: 0.7rem; font-weight: 600;
-    cursor: pointer; transition: all 0.2s;
-    background: #fff;
+/* ── Cabin body ── */
+.cabin-body {
+    max-width: 340px;
+    background: #f8f9fa;
+    border: 3px solid #adb5bd;
+    border-radius: 28px 28px 14px 14px;
+    padding: 0 12px 16px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
 }
-.seat-btn-fl.available { border-color: #198754; color: #198754; }
-.seat-btn-fl.available:hover { background: #198754; color: #fff; }
-.seat-btn-fl.booked { background: #dc3545; color: #fff; cursor: not-allowed; opacity: 0.7; border-color: #dc3545; }
-.seat-btn-fl.selected { background: #198754 !important; color: #fff !important; transform: scale(1.1); box-shadow: 0 0 10px rgba(25,135,84,0.5); }
-.seat-legend-fl { width: 20px; height: 20px; border-radius: 4px; display: inline-block; }
-.seat-legend-fl.available { border: 2px solid #198754; background: #fff; }
-.seat-legend-fl.booked { background: #dc3545; }
-.seat-legend-fl.selected { background: #198754; }
+
+/* ── Cockpit header ── */
+.cabin-front {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #0d6efd;
+    color: #fff;
+    border-radius: 24px 24px 0 0;
+    padding: 10px 16px;
+    margin: 0 -12px 12px;
+    font-size: 0.78rem;
+    font-weight: 600;
+}
+.cockpit-area, .cabin-door {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    font-size: 0.72rem;
+}
+.cockpit-area i, .cabin-door i { font-size: 1.2rem; }
+
+/* ── Column headers ── */
+.fl-col-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 6px;
+}
+.fl-side-label {
+    flex: 1;
+    text-align: center;
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: #6c757d;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+.fl-aisle-gap  { width: 30px; min-width: 30px; }
+.fl-rownum-spacer { width: 20px; }
+
+/* ── Each row ── */
+.fl-row {
+    display: flex;
+    align-items: center;
+    margin-bottom: 6px;
+}
+.fl-triple {
+    display: flex;
+    gap: 5px;
+    flex: 1;
+    justify-content: center;
+}
+.fl-aisle-gap {
+    width: 30px;
+    min-width: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.fl-rownum {
+    font-size: 0.62rem;
+    color: #adb5bd;
+    font-weight: 700;
+}
+
+/* ── Seat button ── */
+.fl-seat-btn {
+    width: 40px;
+    height: 46px;
+    border: none;
+    border-radius: 5px 5px 4px 4px;
+    cursor: pointer;
+    transition: all 0.18s;
+    background: #fff;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 0;
+    overflow: hidden;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+.fl-headrest {
+    display: block;
+    width: 100%;
+    height: 9px;
+    border-radius: 4px 4px 0 0;
+    flex-shrink: 0;
+}
+.fl-label {
+    font-size: 0.65rem;
+    font-weight: 700;
+    margin-top: auto;
+    margin-bottom: 5px;
+    line-height: 1;
+}
+
+/* States */
+.fl-seat-btn.available .fl-headrest { background: #198754; }
+.fl-seat-btn.available              { border: 2px solid #198754; color: #198754; }
+.fl-seat-btn.available:hover        { background: #d1f0e0; transform: scale(1.07); }
+
+.fl-seat-btn.booked .fl-headrest    { background: #dc3545; }
+.fl-seat-btn.booked                 { border: 2px solid #dc3545; color: #dc3545;
+                                      cursor: not-allowed; opacity: 0.65; }
+.fl-seat-btn.booked .fl-label::after { content: '✕'; }
+.fl-seat-btn.booked .fl-label       { font-size: 0; }
+
+.fl-seat-btn.selected .fl-headrest  { background: #198754; }
+.fl-seat-btn.selected               { border: 2px solid #198754 !important;
+                                      background: #d1f0e0 !important;
+                                      color: #198754 !important;
+                                      transform: scale(1.08);
+                                      box-shadow: 0 0 10px rgba(25,135,84,0.35); }
+
+/* ── Rear bar ── */
+.cabin-rear {
+    text-align: center;
+    font-size: 0.75rem;
+    color: #6c757d;
+    font-weight: 600;
+    margin-top: 10px;
+    border-top: 2px dashed #dee2e6;
+    padding-top: 8px;
+    letter-spacing: 0.05em;
+}
+
+/* ── Legend ── */
+.fl-legend {
+    width: 22px; height: 26px;
+    border-radius: 4px 4px 3px 3px;
+    display: inline-block;
+    position: relative;
+}
+.fl-legend::before {
+    content: '';
+    display: block;
+    height: 7px;
+    border-radius: 3px 3px 0 0;
+    position: absolute;
+    top: 0; left: 0; right: 0;
+}
+.fl-legend.available { border: 2px solid #198754; }
+.fl-legend.available::before { background: #198754; }
+.fl-legend.booked    { border: 2px solid #dc3545; opacity: 0.65; }
+.fl-legend.booked::before    { background: #dc3545; }
+.fl-legend.selected  { border: 2px solid #198754; background: #d1f0e0; }
+.fl-legend.selected::before  { background: #198754; }
 </style>
 {% endblock %}
 
@@ -187,7 +380,7 @@
 <script>
 let selectedFlightSeat = null;
 function selectFlightSeat(seatId, element) {
-    document.querySelectorAll('.seat-btn-fl.selected').forEach(btn => btn.classList.remove('selected'));
+    document.querySelectorAll('.fl-seat-btn.selected').forEach(btn => btn.classList.remove('selected'));
     if (selectedFlightSeat === seatId) {
         selectedFlightSeat = null;
         document.getElementById('selectedSeatInputFl').value = '';

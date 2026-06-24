@@ -215,15 +215,10 @@ LOGOUT_REDIRECT_URL = 'booking:home'
 #   - Booking confirmation → sent to the user's email
 #   - Sender is always travelease.np@gmail.com
 
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_PORT = 587
-EMAIL_USE_TLS = True
-EMAIL_HOST_USER = 'travelease.np@gmail.com'
-EMAIL_HOST_PASSWORD = 'tyjmnxgwthcngwwkw'
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 # Default "from" address for all outgoing emails
-DEFAULT_FROM_EMAIL = 'travelease.np@gmail.com'
+DEFAULT_FROM_EMAIL = 'noreply@travelease.np'
 
 
 # =============================================

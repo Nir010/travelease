@@ -221,29 +221,29 @@ def bus_detail(request, bus_id):
     # Get booked seats for seat map
     booked_seats = bus.get_booked_seats()
 
-    # Generate seat layout
-    # For a bus with 40 seats: 4 columns (A,B,C,D) × 10 rows
+    # Generate seat layout: A-side (left 2 per row) and B-side (right 2 per row)
+    # e.g. 42 seats → A1..A21 on left, B1..B21 on right
+    import math
     total_seats = bus.total_seats
-    cols = 4  # A, B, C, D (window, middle, aisle, window)
-    rows = (total_seats + cols - 1) // cols  # Ceiling division
+    left_count = math.ceil(total_seats / 2)
+    right_count = total_seats - left_count
+    num_rows = math.ceil(left_count / 2)
 
-    seat_labels = ['A', 'B', 'C', 'D']
     seat_grid = []
-    seat_num = 1
-    for row in range(rows):
-        row_seats = []
-        for col in range(cols):
-            if seat_num <= total_seats:
-                seat_id = f"{seat_labels[col]}{row + 1}"
-                is_booked = seat_id in booked_seats
-                row_seats.append({
-                    'id': seat_id,
-                    'number': seat_num,
-                    'booked': is_booked,
-                    'label': seat_labels[col],
-                })
-                seat_num += 1
-        seat_grid.append(row_seats)
+    for row in range(num_rows):
+        left_pair = []
+        for pos in range(2):
+            sn = row * 2 + pos + 1
+            if sn <= left_count:
+                seat_id = f"A{sn}"
+                left_pair.append({'id': seat_id, 'booked': seat_id in booked_seats})
+        right_pair = []
+        for pos in range(2):
+            sn = row * 2 + pos + 1
+            if sn <= right_count:
+                seat_id = f"B{sn}"
+                right_pair.append({'id': seat_id, 'booked': seat_id in booked_seats})
+        seat_grid.append({'left': left_pair, 'right': right_pair, 'row_num': row + 1})
 
     context = {
         'bus': bus,
@@ -268,29 +268,29 @@ def flight_detail(request, flight_id):
     flight_images = flight.images.all()
     booked_seats = flight.get_booked_seats()
 
-    # Generate seat layout for flight
-    # Flights typically have 6 seats per row (A,B,C,D,E,F)
+    # Generate seat layout: A-side (left 3 per row) and B-side (right 3 per row)
+    # e.g. 72 seats → A1..A36 left, B1..B36 right
+    import math
     total_seats = flight.total_seats
-    cols = 6
-    rows = (total_seats + cols - 1) // cols
+    left_count = math.ceil(total_seats / 2)
+    right_count = total_seats - left_count
+    num_rows = math.ceil(left_count / 3)
 
-    seat_labels = ['A', 'B', 'C', 'D', 'E', 'F']
     seat_grid = []
-    seat_num = 1
-    for row in range(rows):
-        row_seats = []
-        for col in range(cols):
-            if seat_num <= total_seats:
-                seat_id = f"{seat_labels[col]}{row + 1}"
-                is_booked = seat_id in booked_seats
-                row_seats.append({
-                    'id': seat_id,
-                    'number': seat_num,
-                    'booked': is_booked,
-                    'label': seat_labels[col],
-                })
-                seat_num += 1
-        seat_grid.append(row_seats)
+    for row in range(num_rows):
+        left_triple = []
+        for pos in range(3):
+            sn = row * 3 + pos + 1
+            if sn <= left_count:
+                seat_id = f"A{sn}"
+                left_triple.append({'id': seat_id, 'booked': seat_id in booked_seats})
+        right_triple = []
+        for pos in range(3):
+            sn = row * 3 + pos + 1
+            if sn <= right_count:
+                seat_id = f"B{sn}"
+                right_triple.append({'id': seat_id, 'booked': seat_id in booked_seats})
+        seat_grid.append({'left': left_triple, 'right': right_triple, 'row_num': row + 1})
 
     context = {
         'flight': flight,
