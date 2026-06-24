@@ -1,0 +1,212 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ search_type }} Search Results - TravelEase{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <!-- Back & Search Again -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="fw-bold mb-0">
+            <i class="bi {% if search_type == 'Bus' %}bi-bus-front text-primary{% else %}bi-airplane text-success{% endif %} me-2"></i>
+            {{ search_type }} Search Results
+        </h2>
+        <a href="{% url 'booking:home' %}" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left"></i> New Search
+        </a>
+    </div>
+
+    <!-- Search Summary -->
+    <div class="alert alert-info rounded-4 mb-4">
+        <div class="row align-items-center">
+            <div class="col-md-8">
+                <i class="bi bi-info-circle me-2"></i>
+                {% if departure and destination %}
+                    Searching: <strong>{{ departure }}</strong> → <strong>{{ destination }}</strong>
+                    {% if travel_date %} on <strong>{{ travel_date }}</strong>{% endif %}
+                {% else %}
+                    Showing all available {{ search_type|lower }} schedules
+                {% endif %}
+            </div>
+            <div class="col-md-4 text-md-end mt-2 mt-md-0">
+                <span class="badge bg-primary fs-6">{{ result_count }} result{{ result_count|pluralize }} found</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Search Again Form -->
+    <div class="card shadow-sm border-0 rounded-4 mb-4">
+        <div class="card-body">
+            {% if search_type == 'Bus' %}
+            <form action="{% url 'booking:search_buses' %}" method="GET" class="row g-2">
+            {% else %}
+            <form action="{% url 'booking:search_flights' %}" method="GET" class="row g-2">
+            {% endif %}
+                <div class="col-md-3">
+                    <input type="text" name="departure" class="form-control" placeholder="From" value="{{ departure }}">
+                </div>
+                <div class="col-md-3">
+                    <input type="text" name="destination" class="form-control" placeholder="To" value="{{ destination }}">
+                </div>
+                <div class="col-md-3">
+                    <input type="date" name="date" class="form-control" value="{{ travel_date }}">
+                </div>
+                <div class="col-md-3">
+                    <button type="submit" class="btn btn-primary w-100">
+                        <i class="bi bi-search me-1"></i> Search Again
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Results -->
+    {% if search_type == 'Bus' %}
+        <!-- BUS RESULTS -->
+        {% if buses %}
+        <div class="row g-4">
+            {% for bus in buses %}
+            <div class="col-12">
+                <div class="card border-0 shadow-sm rounded-4 bus-result-card">
+                    <div class="card-body">
+                        <div class="row align-items-center">
+                            <!-- Bus Info -->
+                            <div class="col-md-3">
+                                <h5 class="fw-bold mb-1">{{ bus.bus_name }}</h5>
+                                <span class="badge bg-primary">{{ bus.get_bus_type_display }}</span>
+                                <br><small class="text-muted">{{ bus.bus_number }}</small>
+                            </div>
+
+                            <!-- Route & Time -->
+                            <div class="col-md-4">
+                                <div class="d-flex align-items-center justify-content-between">
+                                    <div class="text-center">
+                                        <h5 class="fw-bold mb-0">{{ bus.departure_time|time:"h:i A" }}</h5>
+                                        <small class="text-muted">{{ bus.departure_city }}</small>
+                                    </div>
+                                    <div class="text-center px-3">
+                                        <div style="width: 80px; height: 2px; background: #dee2e6; position: relative;">
+                                            <i class="bi bi-bus-front text-primary position-absolute top-50 start-50 translate-middle fs-5 bg-white px-1"></i>
+                                        </div>
+                                        <small class="text-muted d-block mt-1">{{ bus.duration }}</small>
+                                    </div>
+                                    <div class="text-center">
+                                        <h5 class="fw-bold mb-0">{{ bus.arrival_time|time:"h:i A" }}</h5>
+                                        <small class="text-muted">{{ bus.destination_city }}</small>
+                                    </div>
+                                </div>
+                                <div class="text-center mt-1">
+                                    <small class="text-muted">
+                                        <i class="bi bi-calendar3"></i> {{ bus.departure_date|date:"D, M d, Y" }}
+                                    </small>
+                                </div>
+                            </div>
+
+                            <!-- Price & Seats -->
+                            <div class="col-md-3 text-center">
+                                <h4 class="fw-bold text-primary mb-0">NPR {{ bus.price }}</h4>
+                                <small class="text-muted">per seat</small>
+                                {% if bus.available_seats <= 5 %}
+                                <br><span class="badge bg-danger mt-1">Only {{ bus.available_seats }} seats left!</span>
+                                {% elif bus.available_seats <= 10 %}
+                                <br><span class="badge bg-warning text-dark mt-1">{{ bus.available_seats }} seats left</span>
+                                {% else %}
+                                <br><span class="badge bg-success mt-1">{{ bus.available_seats }} seats available</span>
+                                {% endif %}
+                            </div>
+
+                            <!-- Book Button -->
+                            <div class="col-md-2 text-center">
+                                <a href="{% url 'booking:bus_detail' bus.id %}" class="btn btn-primary px-4">
+                                    Book <i class="bi bi-arrow-right"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="text-center py-5">
+            <i class="bi bi-bus-front display-1 text-muted"></i>
+            <h4 class="text-muted mt-3">No buses found</h4>
+            <p>Try different search criteria or browse all <a href="{% url 'booking:all_buses' %}">available buses</a>.</p>
+        </div>
+        {% endif %}
+
+    {% else %}
+        <!-- FLIGHT RESULTS -->
+        {% if flights %}
+        <div class="row g-4">
+            {% for flight in flights %}
+            <div class="col-12">
+                <div class="card border-0 shadow-sm rounded-4 flight-result-card">
+                    <div class="card-body">
+                        <div class="row align-items-center">
+                            <!-- Flight Info -->
+                            <div class="col-md-3">
+                                <h5 class="fw-bold mb-1">{{ flight.airline }}</h5>
+                                <span class="badge bg-success">{{ flight.get_flight_type_display }}</span>
+                                <br><small class="text-muted">{{ flight.flight_number }}</small>
+                            </div>
+
+                            <!-- Route & Time -->
+                            <div class="col-md-4">
+                                <div class="d-flex align-items-center justify-content-between">
+                                    <div class="text-center">
+                                        <h5 class="fw-bold mb-0">{{ flight.departure_time|time:"h:i A" }}</h5>
+                                        <small class="text-muted">{{ flight.departure_city }}</small>
+                                    </div>
+                                    <div class="text-center px-3">
+                                        <div style="width: 80px; height: 2px; background: #dee2e6; position: relative;">
+                                            <i class="bi bi-airplane text-success position-absolute top-50 start-50 translate-middle fs-5 bg-white px-1"></i>
+                                        </div>
+                                        <small class="text-muted d-block mt-1">{{ flight.duration }}</small>
+                                    </div>
+                                    <div class="text-center">
+                                        <h5 class="fw-bold mb-0">{{ flight.arrival_time|time:"h:i A" }}</h5>
+                                        <small class="text-muted">{{ flight.destination_city }}</small>
+                                    </div>
+                                </div>
+                                <div class="text-center mt-1">
+                                    <small class="text-muted">
+                                        <i class="bi bi-calendar3"></i> {{ flight.departure_date|date:"D, M d, Y" }}
+                                    </small>
+                                </div>
+                            </div>
+
+                            <!-- Price & Seats -->
+                            <div class="col-md-3 text-center">
+                                <h4 class="fw-bold text-success mb-0">NPR {{ flight.price }}</h4>
+                                <small class="text-muted">per seat</small>
+                                {% if flight.available_seats <= 10 %}
+                                <br><span class="badge bg-danger mt-1">Only {{ flight.available_seats }} seats left!</span>
+                                {% elif flight.available_seats <= 30 %}
+                                <br><span class="badge bg-warning text-dark mt-1">{{ flight.available_seats }} seats left</span>
+                                {% else %}
+                                <br><span class="badge bg-success mt-1">{{ flight.available_seats }} seats available</span>
+                                {% endif %}
+                            </div>
+
+                            <!-- Book Button -->
+                            <div class="col-md-2 text-center">
+                                <a href="{% url 'booking:flight_detail' flight.id %}" class="btn btn-success px-4">
+                                    Book <i class="bi bi-arrow-right"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="text-center py-5">
+            <i class="bi bi-airplane display-1 text-muted"></i>
+            <h4 class="text-muted mt-3">No flights found</h4>
+            <p>Try different search criteria or browse all <a href="{% url 'booking:all_flights' %}">available flights</a>.</p>
+        </div>
+        {% endif %}
+    {% endif %}
+</div>
+{% endblock %}

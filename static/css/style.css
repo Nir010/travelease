@@ -1,0 +1,690 @@
+/**
+ * TravelEase - Custom Stylesheet
+ * ================================
+ * This stylesheet supplements Bootstrap 5.3 with TravelEase brand colors,
+ * animations, and component-specific styling. Bootstrap handles the responsive
+ * grid, typography baseline, and utility classes; we add the personality here.
+ */
+
+/* ==========================================================================
+   1. CSS Custom Properties (Design Tokens)
+   Centralizing brand colors, shadows, and radii makes the design system
+   consistent and easy to maintain. Change these once to update everywhere.
+   ========================================================================== */
+:root {
+    /* Primary palette — deep blue conveys trust and travel */
+    --te-primary: #1a56db;
+    --te-primary-dark: #1241a6;
+    --te-primary-light: #e8f0fe;
+
+    /* Accent — warm orange for CTAs and highlights */
+    --te-accent: #f59e0b;
+    --te-accent-dark: #d97706;
+
+    /* Status colors */
+    --te-success: #059669;
+    --te-danger: #dc2626;
+    --te-warning: #f59e0b;
+    --te-info: #3b82f6;
+
+    /* Neutrals */
+    --te-gray-50: #f9fafb;
+    --te-gray-100: #f3f4f6;
+    --te-gray-200: #e5e7eb;
+    --te-gray-600: #4b5563;
+    --te-gray-800: #1f2937;
+
+    /* Shadows */
+    --te-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+    --te-shadow-md: 0 4px 6px rgba(0, 0, 0, 0.07);
+    --te-shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
+    --te-shadow-xl: 0 20px 25px rgba(0, 0, 0, 0.15);
+
+    /* Border radius */
+    --te-radius: 0.75rem;
+    --te-radius-sm: 0.5rem;
+}
+
+/* ==========================================================================
+   2. Global Resets & Typography
+   Poppins is loaded from Google Fonts in base.html — it's clean, modern,
+   and reads well at both large headings and small body sizes.
+   ========================================================================== */
+body {
+    font-family: 'Poppins', sans-serif;
+    background-color: var(--te-gray-50);
+    color: var(--te-gray-800);
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+/* Push footer to bottom when content is short */
+main {
+    flex: 1 0 auto;
+}
+
+/* Smooth link transitions */
+a {
+    transition: color 0.2s ease;
+}
+
+/* ==========================================================================
+   3. Navbar Customization
+   The navbar uses Bootstrap's bg-white shadow-sm. We add brand styling
+   and active-link indicators.
+   ========================================================================== */
+.navbar-brand {
+    font-weight: 700;
+    font-size: 1.4rem;
+    color: var(--te-primary) !important;
+    letter-spacing: -0.5px;
+}
+
+.navbar-brand i {
+    color: var(--te-accent);
+}
+
+.navbar .nav-link {
+    font-weight: 500;
+    color: var(--te-gray-600);
+    padding: 0.5rem 1rem;
+    border-radius: var(--te-radius-sm);
+}
+
+.navbar .nav-link:hover,
+.navbar .nav-link.active {
+    color: var(--te-primary);
+    background-color: var(--te-primary-light);
+}
+
+/* Dropdown hover enhancement */
+.dropdown-menu {
+    border: none;
+    box-shadow: var(--te-shadow-lg);
+    border-radius: var(--te-radius);
+    padding: 0.5rem;
+}
+
+.dropdown-item {
+    border-radius: var(--te-radius-sm);
+    padding: 0.5rem 1rem;
+}
+
+.dropdown-item:hover {
+    background-color: var(--te-primary-light);
+    color: var(--te-primary);
+}
+
+/* ==========================================================================
+   4. Hero Section (Homepage)
+   Gradient background with overlay texture. The ::before pseudo-element
+   adds a subtle dot pattern for depth without an extra image asset.
+   ========================================================================== */
+.hero-section {
+    background: linear-gradient(135deg, var(--te-primary) 0%, #1e40af 50%, #1e3a8a 100%);
+    padding: 5rem 0 4rem;
+    position: relative;
+    overflow: hidden;
+}
+
+.hero-section::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: radial-gradient(circle, rgba(255,255,255,0.08) 1px, transparent 1px);
+    background-size: 24px 24px;
+    pointer-events: none;
+}
+
+.hero-section h1 {
+    font-weight: 800;
+    letter-spacing: -1px;
+}
+
+.hero-section .lead {
+    opacity: 0.9;
+}
+
+/* ==========================================================================
+   5. Search Form Card
+   The floating search card on the homepage sits inside the hero section
+   with a slight negative margin to overlap the hero/first-content boundary.
+   ========================================================================== */
+.search-card {
+    background: #fff;
+    border-radius: var(--te-radius);
+    box-shadow: var(--te-shadow-xl);
+    padding: 2rem;
+    margin-top: -1rem;
+    margin-bottom: 3rem;
+    position: relative;
+    z-index: 10;
+}
+
+.search-card .nav-tabs {
+    border-bottom: 2px solid var(--te-gray-200);
+    margin-bottom: 1.5rem;
+}
+
+.search-card .nav-tabs .nav-link {
+    border: none;
+    color: var(--te-gray-600);
+    font-weight: 600;
+    padding: 0.75rem 1.5rem;
+    border-bottom: 3px solid transparent;
+    transition: all 0.2s ease;
+}
+
+.search-card .nav-tabs .nav-link.active {
+    color: var(--te-primary);
+    border-bottom-color: var(--te-primary);
+    background: transparent;
+}
+
+.search-card .nav-tabs .nav-link:hover {
+    border-bottom-color: var(--te-primary-light);
+}
+
+.search-card .form-control,
+.search-card .form-select {
+    border-radius: var(--te-radius-sm);
+    padding: 0.65rem 1rem;
+    border-color: var(--te-gray-200);
+}
+
+.search-card .form-control:focus,
+.search-card .form-select:focus {
+    border-color: var(--te-primary);
+    box-shadow: 0 0 0 3px rgba(26, 86, 219, 0.15);
+}
+
+/* ==========================================================================
+   6. Card Hover Effects
+   All result cards and listing cards get a lift-on-hover effect that
+   makes the UI feel responsive and tactile.
+   ========================================================================== */
+.card-hover {
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+    border: 1px solid var(--te-gray-200);
+    border-radius: var(--te-radius);
+}
+
+.card-hover:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--te-shadow-lg);
+}
+
+/* ==========================================================================
+   7. Bus / Flight Type Badges
+   Color-coded badges for different transport types.
+   ========================================================================== */
+.badge-ac { background-color: #dbeafe; color: #1e40af; }
+.badge-non-ac { background-color: #fee2e2; color: #991b1b; }
+.badge-sleeper { background-color: #ede9fe; color: #5b21b6; }
+.badge-semi-sleeper { background-color: #d1fae5; color: #065f46; }
+.badge-volvo { background-color: #fef3c7; color: #92400e; }
+.badge-tata { background-color: #e0e7ff; color: #3730a3; }
+
+/* ==========================================================================
+   8. Route Visual (Horizontal Line + Icon)
+   Used on detail pages and search results to show departure → destination.
+   ========================================================================== */
+.route-visual {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    padding: 1rem 0;
+}
+
+.route-visual .route-city {
+    font-weight: 600;
+    font-size: 1rem;
+    white-space: nowrap;
+}
+
+.route-visual .route-line {
+    flex: 1;
+    height: 2px;
+    background: var(--te-gray-200);
+    margin: 0 0.75rem;
+    position: relative;
+}
+
+.route-visual .route-line::after {
+    content: '🚌';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: white;
+    padding: 0 0.5rem;
+    font-size: 1.2rem;
+}
+
+.route-visual .route-duration {
+    font-size: 0.8rem;
+    color: var(--te-gray-600);
+    text-align: center;
+}
+
+/* ==========================================================================
+   9. Seat Map Styles
+   The interactive seat grid is the most complex UI component. CSS handles
+   the visual states; JavaScript in main.js manages click behavior.
+   ========================================================================== */
+.seat-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0.5rem;
+    max-width: 320px;
+    margin: 0 auto;
+}
+
+.seat-grid-flight {
+    grid-template-columns: repeat(6, 1fr);
+    max-width: 480px;
+}
+
+.seat-btn {
+    aspect-ratio: 1;
+    border: 2px solid #d1d5db;
+    border-radius: 8px;
+    background: #f9fafb;
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: #6b7280;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.seat-btn:hover:not(.booked):not(.selected) {
+    border-color: var(--te-primary);
+    background: #eff6ff;
+    color: var(--te-primary);
+}
+
+.seat-btn.booked {
+    background: #fee2e2;
+    border-color: #fca5a5;
+    color: #991b1b;
+    cursor: not-allowed;
+}
+
+.seat-btn.selected {
+    background: #059669;
+    border-color: #047857;
+    color: white;
+    transform: scale(1.05);
+}
+
+/* Seat map legend */
+.seat-legend {
+    display: flex;
+    gap: 1.5rem;
+    justify-content: center;
+    margin-bottom: 1rem;
+}
+
+.seat-legend span {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.8rem;
+    color: var(--te-gray-600);
+}
+
+.seat-legend .legend-box {
+    width: 16px;
+    height: 16px;
+    border-radius: 4px;
+}
+
+/* ==========================================================================
+   10. Booking Sidebar (Sticky on Desktop)
+   The sidebar on bus/flight detail pages stays visible while scrolling.
+   ========================================================================== */
+.booking-sidebar {
+    position: sticky;
+    top: 2rem;
+}
+
+.booking-sidebar .card {
+    border: 1px solid var(--te-gray-200);
+    border-radius: var(--te-radius);
+    box-shadow: var(--te-shadow-md);
+}
+
+/* ==========================================================================
+   11. Status Badges (Booking States)
+   ========================================================================== */
+.status-confirmed { background: #d1fae5; color: #065f46; }
+.status-pending { background: #fef3c7; color: #92400e; }
+.status-cancelled { background: #fee2e2; color: #991b1b; }
+.status-completed { background: #dbeafe; color: #1e40af; }
+
+/* ==========================================================================
+   12. Payment Method Buttons
+   Large, tappable buttons for Khalti and eSewa.
+   ========================================================================== */
+.btn-khalti {
+    background: #5c2d91;
+    color: white;
+    font-weight: 700;
+    font-size: 1.1rem;
+    padding: 1rem 2rem;
+    border-radius: var(--te-radius);
+    border: none;
+    transition: all 0.2s ease;
+}
+
+.btn-khalti:hover {
+    background: #4a1d7a;
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: var(--te-shadow-md);
+}
+
+.btn-esewa {
+    background: #60b246;
+    color: white;
+    font-weight: 700;
+    font-size: 1.1rem;
+    padding: 1rem 2rem;
+    border-radius: var(--te-radius);
+    border: none;
+    transition: all 0.2s ease;
+}
+
+.btn-esewa:hover {
+    background: #4d9e35;
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: var(--te-shadow-md);
+}
+
+/* ==========================================================================
+   13. E-Ticket / Confirmation Page
+   Clean, printable ticket layout with success animation.
+   ========================================================================== */
+.ticket-card {
+    border: 2px dashed var(--te-gray-200);
+    border-radius: var(--te-radius);
+    background: white;
+}
+
+/* Success checkmark animation */
+@keyframes checkmark-pop {
+    0% { transform: scale(0); opacity: 0; }
+    60% { transform: scale(1.2); opacity: 1; }
+    100% { transform: scale(1); opacity: 1; }
+}
+
+.checkmark-animate {
+    animation: checkmark-pop 0.4s ease forwards;
+}
+
+/* ==========================================================================
+   14. OTP Input Field
+   Larger, letter-spaced input for the 6-digit OTP code.
+   ========================================================================== */
+.otp-input {
+    font-size: 2rem;
+    letter-spacing: 1rem;
+    text-align: center;
+    font-weight: 700;
+    max-width: 280px;
+    margin: 0 auto;
+}
+
+/* ==========================================================================
+   15. Stats Cards (Homepage & Dashboard)
+   Cards with icon + number + label used for statistics.
+   ========================================================================== */
+.stat-card {
+    text-align: center;
+    padding: 1.5rem;
+    border-radius: var(--te-radius);
+    background: white;
+    border: 1px solid var(--te-gray-200);
+    transition: transform 0.2s ease;
+}
+
+.stat-card:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--te-shadow-md);
+}
+
+.stat-card .stat-icon {
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+}
+
+.stat-card .stat-number {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: var(--te-primary);
+}
+
+.stat-card .stat-label {
+    font-size: 0.85rem;
+    color: var(--te-gray-600);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* ==========================================================================
+   16. Feature Cards (Homepage)
+   Three feature highlights with gradient icon backgrounds.
+   ========================================================================== */
+.feature-card {
+    text-align: center;
+    padding: 2rem 1.5rem;
+    border-radius: var(--te-radius);
+    background: white;
+    border: 1px solid var(--te-gray-200);
+    transition: transform 0.25s ease;
+}
+
+.feature-card:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--te-shadow-lg);
+}
+
+.feature-card .feature-icon {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1rem;
+    font-size: 1.5rem;
+}
+
+.feature-card:nth-child(1) .feature-icon {
+    background: linear-gradient(135deg, #dbeafe, #bfdbfe);
+    color: var(--te-primary);
+}
+
+.feature-card:nth-child(2) .feature-icon {
+    background: linear-gradient(135deg, #d1fae5, #a7f3d0);
+    color: #059669;
+}
+
+.feature-card:nth-child(3) .feature-icon {
+    background: linear-gradient(135deg, #fef3c7, #fde68a);
+    color: #d97706;
+}
+
+/* ==========================================================================
+   17. Footer
+   Dark background with light text, multi-column layout.
+   ========================================================================== */
+.footer {
+    background: #111827;
+    color: #d1d5db;
+    padding: 3rem 0 1.5rem;
+    margin-top: auto;
+}
+
+.footer h5 {
+    color: white;
+    font-weight: 600;
+    margin-bottom: 1rem;
+}
+
+.footer a {
+    color: #9ca3af;
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+.footer a:hover {
+    color: white;
+}
+
+.footer .footer-bottom {
+    border-top: 1px solid #374151;
+    margin-top: 2rem;
+    padding-top: 1.5rem;
+    text-align: center;
+    font-size: 0.85rem;
+    color: #6b7280;
+}
+
+/* ==========================================================================
+   18. Fade-in Animation (Homepage Hero)
+   Triggered by JavaScript on page load.
+   ========================================================================== */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.animate-fade-in {
+    animation: fadeInUp 0.8s ease forwards;
+}
+
+.animate-fade-in-delay-1 { animation-delay: 0.2s; }
+.animate-fade-in-delay-2 { animation-delay: 0.4s; }
+
+/* ==========================================================================
+   19. Search Result Card
+   Horizontal layout with route visualization.
+   ========================================================================== */
+.result-card {
+    padding: 1.25rem;
+}
+
+.result-card .price-tag {
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: var(--te-primary);
+}
+
+/* ==========================================================================
+   20. Amenities Icons Row
+   Used on bus/flight detail pages.
+   ========================================================================== */
+.amenities-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.amenity-item {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.85rem;
+    color: var(--te-gray-600);
+    background: var(--te-gray-100);
+    padding: 0.3rem 0.75rem;
+    border-radius: 20px;
+}
+
+/* ==========================================================================
+   21. Empty State
+   When no results are found.
+   ========================================================================== */
+.empty-state {
+    text-align: center;
+    padding: 4rem 2rem;
+}
+
+.empty-state .empty-icon {
+    font-size: 4rem;
+    color: var(--te-gray-200);
+    margin-bottom: 1rem;
+}
+
+/* ==========================================================================
+   22. Loading Spinner Override
+   ========================================================================== */
+.spinner-border {
+    border-width: 0.15em;
+}
+
+/* ==========================================================================
+   23. Scrollbar Styling (WebKit)
+   Subtle custom scrollbar for better aesthetics.
+   ========================================================================== */
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--te-gray-100);
+}
+
+::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
+}
+
+/* ==========================================================================
+   24. Responsive Tweaks
+   Fine-tuning Bootstrap's breakpoints for TravelEase specifics.
+   ========================================================================== */
+@media (max-width: 768px) {
+    .hero-section {
+        padding: 3rem 0 2rem;
+    }
+
+    .hero-section h1 {
+        font-size: 1.75rem;
+    }
+
+    .search-card {
+        padding: 1.25rem;
+        margin-top: 0;
+    }
+
+    .seat-grid {
+        grid-template-columns: repeat(4, 1fr);
+        max-width: 280px;
+    }
+
+    .booking-sidebar {
+        position: static;
+        margin-top: 1.5rem;
+    }
+
+    .stat-card .stat-number {
+        font-size: 1.4rem;
+    }
+}

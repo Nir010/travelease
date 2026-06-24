@@ -1,0 +1,92 @@
+{% extends 'base.html' %}
+
+{% block title %}Register - TravelEase{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6 col-lg-5">
+            <div class="card border-0 shadow-lg rounded-4">
+                <div class="card-body p-4 p-lg-5">
+                    <!-- Header -->
+                    <div class="text-center mb-4">
+                        <i class="bi bi-person-plus display-4 text-primary"></i>
+                        <h3 class="fw-bold mt-2">Create Account</h3>
+                        <p class="text-muted">Join TravelEase to book bus & flight tickets</p>
+                    </div>
+
+                    <form method="POST" action="{% url 'accounts:register' %}">
+                        {% csrf_token %}
+
+                        <div class="row g-2 mb-3">
+                            <div class="col-6">
+                                <label class="form-label fw-semibold">First Name</label>
+                                <input type="text" name="first_name" class="form-control" placeholder="First Name">
+                            </div>
+                            <div class="col-6">
+                                <label class="form-label fw-semibold">Last Name</label>
+                                <input type="text" name="last_name" class="form-control" placeholder="Last Name">
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Username <span class="text-danger">*</span></label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="bi bi-person"></i></span>
+                                <input type="text" name="username" class="form-control" placeholder="Choose a username"
+                                       value="{{ username }}" required minlength="3">
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Email <span class="text-danger">*</span></label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="bi bi-envelope"></i></span>
+                                <input type="email" name="email" class="form-control" placeholder="your@email.com"
+                                       value="{{ email }}" required>
+                            </div>
+                            <small class="text-muted">An OTP will be sent to verify your email.</small>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Phone Number</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="bi bi-telephone"></i></span>
+                                <input type="tel" name="phone" class="form-control" placeholder="+977 98XXXXXXXX"
+                                       value="{{ phone }}">
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Password <span class="text-danger">*</span></label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="bi bi-lock"></i></span>
+                                <input type="password" name="password" class="form-control"
+                                       placeholder="At least 6 characters" required minlength="6">
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label fw-semibold">Confirm Password <span class="text-danger">*</span></label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="bi bi-lock-fill"></i></span>
+                                <input type="password" name="password2" class="form-control"
+                                       placeholder="Re-enter password" required minlength="6">
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary btn-lg w-100 shadow-sm mb-3">
+                            <i class="bi bi-person-check me-2"></i> Create Account
+                        </button>
+
+                        <p class="text-center text-muted mb-0">
+                            Already have an account?
+                            <a href="{% url 'accounts:login' %}" class="fw-semibold">Login here</a>
+                        </p>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

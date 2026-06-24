@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+
+{% block title %}All Flights - TravelEase{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <h3 class="fw-bold mb-4"><i class="bi bi-airplane text-success me-2"></i>All Flight Schedules</h3>
+    {% if flights %}
+    <div class="row g-4">
+        {% for flight in flights %}
+        <div class="col-md-6 col-lg-4">
+            <div class="card border-0 shadow-sm h-100 rounded-4">
+                <div class="card-body">
+                    <h5 class="fw-bold">{{ flight.airline }}</h5>
+                    <span class="badge bg-success">{{ flight.get_flight_type_display }}</span>
+                    <small class="text-muted ms-2">{{ flight.flight_number }}</small>
+                    <hr>
+                    <small>{{ flight.departure_city }} → {{ flight.destination_city }}</small><br>
+                    <small class="text-muted">{{ flight.departure_date }} | {{ flight.departure_time }} - {{ flight.arrival_time }}</small>
+                    <hr>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span class="fw-bold text-success">NPR {{ flight.price }}</span>
+                        <a href="{% url 'booking:flight_detail' flight.id %}" class="btn btn-success btn-sm">Book</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="text-center py-5"><i class="bi bi-airplane display-1 text-muted"></i><h5 class="text-muted mt-3">No flights available</h5></div>
+    {% endif %}
+</div>
+{% endblock %}

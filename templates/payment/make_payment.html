@@ -1,0 +1,111 @@
+{% extends 'base.html' %}
+
+{% block title %}Make Payment - TravelEase{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <nav aria-label="breadcrumb" class="mb-3">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'booking:home' %}">Home</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'booking:booking_detail' booking.id %}">Booking</a></li>
+            <li class="breadcrumb-item active">Payment</li>
+        </ol>
+    </nav>
+
+    <div class="row g-4">
+        <!-- Booking Summary -->
+        <div class="col-lg-5">
+            <div class="card border-0 shadow-sm rounded-4">
+                <div class="card-body p-4">
+                    <h5 class="fw-bold mb-3"><i class="bi bi-receipt me-2"></i>Booking Summary</h5>
+                    <hr>
+                    <div class="mb-3">
+                        <small class="text-muted">Booking Reference</small>
+                        <h6 class="fw-bold text-primary">{{ booking.booking_reference }}</h6>
+                    </div>
+                    <table class="table table-sm">
+                        <tr><td class="text-muted">Type</td><td class="fw-semibold">{{ booking.booking_type }}</td></tr>
+                        <tr><td class="text-muted">Transport</td><td class="fw-semibold">{{ booking.get_transport_name }}</td></tr>
+                        <tr><td class="text-muted">Route</td><td class="fw-semibold">{{ booking.get_route }}</td></tr>
+                        <tr><td class="text-muted">Departure</td><td class="fw-semibold">{{ booking.get_departure_datetime }}</td></tr>
+                        <tr><td class="text-muted">Passenger</td><td class="fw-semibold">{{ booking.passenger_name }}</td></tr>
+                        <tr><td class="text-muted">Seat Number</td><td><span class="badge bg-primary fs-6">{{ booking.seat_number }}</span></td></tr>
+                        <tr class="table-light"><td class="fw-bold">Total Amount</td><td class="fw-bold fs-5 text-primary">NPR {{ booking.total_price }}</td></tr>
+                    </table>
+                    <div class="alert alert-info small mb-0">
+                        <i class="bi bi-info-circle me-1"></i> This is a simulated payment. No real money will be charged.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Payment Options -->
+        <div class="col-lg-7">
+            <div class="card border-0 shadow-sm rounded-4">
+                <div class="card-body p-4">
+                    <h5 class="fw-bold mb-3"><i class="bi bi-credit-card me-2"></i>Choose Payment Method</h5>
+                    <hr>
+                    <p class="text-muted mb-4">Select a payment method to complete your booking.</p>
+
+                    <!-- Khalti -->
+                    <div class="payment-option mb-3">
+                        <form method="POST" action="{% url 'payment:process_payment' booking.id %}">
+                            {% csrf_token %}
+                            <input type="hidden" name="payment_method" value="KHALTI">
+                            <button type="submit" class="btn btn-outline-primary w-100 p-4 text-start payment-btn">
+                                <div class="row align-items-center">
+                                    <div class="col-2 text-center">
+                                        <div class="bg-primary text-white rounded-4 d-inline-flex align-items-center justify-content-center"
+                                             style="width: 50px; height: 50px; font-size: 1.5rem; font-weight: bold;">K</div>
+                                    </div>
+                                    <div class="col-8">
+                                        <h6 class="fw-bold mb-1">Khalti Digital Wallet</h6>
+                                        <small class="text-muted">Nepal's popular digital payment platform</small>
+                                    </div>
+                                    <div class="col-2 text-end">
+                                        <i class="bi bi-chevron-right fs-4 text-muted"></i>
+                                    </div>
+                                </div>
+                            </button>
+                        </form>
+                    </div>
+
+                    <!-- eSewa -->
+                    <div class="payment-option">
+                        <form method="POST" action="{% url 'payment:process_payment' booking.id %}">
+                            {% csrf_token %}
+                            <input type="hidden" name="payment_method" value="ESEWA">
+                            <button type="submit" class="btn btn-outline-success w-100 p-4 text-start payment-btn">
+                                <div class="row align-items-center">
+                                    <div class="col-2 text-center">
+                                        <div class="bg-success text-white rounded-4 d-inline-flex align-items-center justify-content-center"
+                                             style="width: 50px; height: 50px; font-size: 1.5rem; font-weight: bold;">e</div>
+                                    </div>
+                                    <div class="col-8">
+                                        <h6 class="fw-bold mb-1">eSewa Digital Wallet</h6>
+                                        <small class="text-muted">Nepal's trusted online payment solution</small>
+                                    </div>
+                                    <div class="col-2 text-end">
+                                        <i class="bi bi-chevron-right fs-4 text-muted"></i>
+                                    </div>
+                                </div>
+                            </button>
+                        </form>
+                    </div>
+
+                    <div class="text-center mt-4">
+                        <a href="{% url 'payment:payment_failed' booking.id %}" class="btn btn-outline-danger btn-sm">
+                            Simulate Payment Failure
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.payment-btn { transition: all 0.3s; border-width: 2px; }
+.payment-btn:hover { transform: translateX(5px); box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
+</style>
+{% endblock %}

@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+
+{% block title %}All Buses - TravelEase{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <h3 class="fw-bold mb-4"><i class="bi bi-bus-front text-primary me-2"></i>All Bus Schedules</h3>
+    {% if buses %}
+    <div class="row g-4">
+        {% for bus in buses %}
+        <div class="col-md-6 col-lg-4">
+            <div class="card border-0 shadow-sm h-100 rounded-4">
+                <div class="card-body">
+                    <h5 class="fw-bold">{{ bus.bus_name }}</h5>
+                    <span class="badge bg-primary">{{ bus.get_bus_type_display }}</span>
+                    <hr>
+                    <small>{{ bus.departure_city }} → {{ bus.destination_city }}</small><br>
+                    <small class="text-muted">{{ bus.departure_date }} | {{ bus.departure_time }} - {{ bus.arrival_time }}</small>
+                    <hr>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span class="fw-bold text-primary">NPR {{ bus.price }}</span>
+                        <a href="{% url 'booking:bus_detail' bus.id %}" class="btn btn-primary btn-sm">Book</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="text-center py-5"><i class="bi bi-bus-front display-1 text-muted"></i><h5 class="text-muted mt-3">No buses available</h5></div>
+    {% endif %}
+</div>
+{% endblock %}

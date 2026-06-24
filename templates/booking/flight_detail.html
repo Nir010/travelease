@@ -1,0 +1,207 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ flight.airline }} - Flight Detail | TravelEase{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <nav aria-label="breadcrumb" class="mb-3">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'booking:home' %}">Home</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'booking:search_flights' %}">Flights</a></li>
+            <li class="breadcrumb-item active">{{ flight.airline }}</li>
+        </ol>
+    </nav>
+
+    <div class="row g-4">
+        <div class="col-lg-8">
+            <div class="card border-0 shadow-sm rounded-4 mb-4">
+                <div class="card-body p-4">
+                    <div class="d-flex justify-content-between align-items-start mb-4">
+                        <div>
+                            <h3 class="fw-bold mb-1">{{ flight.airline }}</h3>
+                            <span class="badge bg-success fs-6">{{ flight.get_flight_type_display }}</span>
+                            <span class="text-muted ms-2">{{ flight.flight_number }}</span>
+                            {% if flight.terminal %}<br><small class="text-muted">Terminal: {{ flight.terminal }}</small>{% endif %}
+                            {% if flight.gate %}<small class="text-muted ms-2">Gate: {{ flight.gate }}</small>{% endif %}
+                        </div>
+                        <span class="badge {% if flight.available_seats > 0 %}bg-success{% else %}bg-danger{% endif %} fs-6">
+                            {{ flight.available_seats }} Seats Available
+                        </span>
+                    </div>
+
+                    <!-- Route Visual -->
+                    <div class="card bg-light border-0 rounded-4 p-4 mb-4">
+                        <div class="row align-items-center text-center">
+                            <div class="col-5">
+                                <h4 class="fw-bold mb-1">{{ flight.departure_time|time:"h:i A" }}</h4>
+                                <p class="text-muted mb-0">{{ flight.departure_date|date:"l, F d, Y" }}</p>
+                                <h5 class="fw-bold text-success mt-2">{{ flight.departure_city }}</h5>
+                            </div>
+                            <div class="col-2">
+                                <div class="position-relative py-3">
+                                    <hr class="border-2 border-success">
+                                    <i class="bi bi-airplane fs-3 text-success position-absolute top-50 start-50 translate-middle bg-light px-2"></i>
+                                </div>
+                                <small class="text-muted fw-semibold">{{ flight.duration }}</small>
+                            </div>
+                            <div class="col-5">
+                                <h4 class="fw-bold mb-1">{{ flight.arrival_time|time:"h:i A" }}</h4>
+                                <p class="text-muted mb-0">{{ flight.departure_date|date:"l, F d, Y" }}</p>
+                                <h5 class="fw-bold text-danger mt-2">{{ flight.destination_city }}</h5>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Seat Map (Flight: 6 columns per row) -->
+            <div class="card border-0 shadow-sm rounded-4">
+                <div class="card-body p-4">
+                    <h5 class="fw-bold mb-3"><i class="bi bi-grid-3x3-gap me-2"></i>Seat Layout</h5>
+                    <div class="d-flex gap-4 mb-4 flex-wrap">
+                        <div class="d-flex align-items-center">
+                            <span class="seat-legend-fl available me-2"></span>
+                            <small>Available</small>
+                        </div>
+                        <div class="d-flex align-items-center">
+                            <span class="seat-legend-fl booked me-2"></span>
+                            <small>Booked</small>
+                        </div>
+                        <div class="d-flex align-items-center">
+                            <span class="seat-legend-fl selected me-2"></span>
+                            <small>Your Selection</small>
+                        </div>
+                    </div>
+
+                    <div class="text-center mb-3 p-2 bg-secondary text-white rounded-2 d-inline-block px-5">
+                        <i class="bi bi-person-workspace"></i> COCKPIT
+                    </div>
+
+                    <div class="seat-grid mx-auto" style="max-width: 450px;">
+                        {% for row in seat_grid %}
+                        <div class="d-flex justify-content-center gap-1 mb-1">
+                            {% for seat in row %}
+                            <button type="button"
+                                    class="seat-btn-fl {% if seat.booked %}booked{% else %}available{% endif %}"
+                                    {% if seat.booked %}disabled{% endif %}
+                                    onclick="selectFlightSeat('{{ seat.id }}', this)">
+                                {{ seat.id }}
+                            </button>
+                            {% endfor %}
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Booking Sidebar -->
+        <div class="col-lg-4">
+            <div class="card border-0 shadow-sm rounded-4 sticky-top" style="top: 80px;">
+                <div class="card-body p-4">
+                    <h5 class="fw-bold mb-3">Book This Flight</h5>
+                    <hr>
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <span class="text-muted">Price per seat:</span>
+                        <h4 class="fw-bold text-success mb-0">NPR {{ flight.price }}</h4>
+                    </div>
+                    <div class="d-flex justify-content-between mb-3">
+                        <span class="text-muted">Selected Seat:</span>
+                        <span id="selectedSeatDisplayFl" class="fw-bold text-success">None</span>
+                    </div>
+                    <hr>
+
+                    {% if user.is_authenticated %}
+                    <form id="flightBookingForm" method="POST" action="{% url 'booking:book_ticket' %}">
+                        {% csrf_token %}
+                        <input type="hidden" name="booking_type" value="FLIGHT">
+                        <input type="hidden" name="transport_id" value="{{ flight.id }}">
+                        <input type="hidden" name="seat_number" id="selectedSeatInputFl" value="">
+
+                        <h6 class="fw-bold mb-3">Passenger Details</h6>
+                        <div class="mb-2">
+                            <input type="text" name="passenger_name" class="form-control" placeholder="Full Name *" required
+                                   value="{{ user.get_full_name }}">
+                        </div>
+                        <div class="mb-2">
+                            <input type="email" name="passenger_email" class="form-control" placeholder="Email *" required
+                                   value="{{ user.email }}">
+                        </div>
+                        <div class="mb-2">
+                            <input type="tel" name="passenger_phone" class="form-control" placeholder="Phone *" required
+                                   value="{{ user.profile.phone_number }}">
+                        </div>
+                        <div class="row g-2 mb-3">
+                            <div class="col-6">
+                                <input type="number" name="passenger_age" class="form-control" placeholder="Age" min="1" max="120">
+                            </div>
+                            <div class="col-6">
+                                <select name="passenger_gender" class="form-select">
+                                    <option value="">Gender</option>
+                                    <option value="MALE">Male</option>
+                                    <option value="FEMALE">Female</option>
+                                    <option value="OTHER">Other</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <button type="submit" id="bookBtnFl" class="btn btn-success btn-lg w-100 shadow" disabled>
+                            <i class="bi bi-cart-check me-2"></i> Select a Seat to Book
+                        </button>
+                    </form>
+                    {% else %}
+                    <div class="text-center py-3">
+                        <i class="bi bi-lock display-4 text-muted"></i>
+                        <p class="mt-2 mb-3">Please login to book tickets.</p>
+                        <a href="{% url 'accounts:login' %}?next={{ request.path }}" class="btn btn-success">
+                            <i class="bi bi-box-arrow-in-right me-1"></i> Login to Book
+                        </a>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.seat-btn-fl {
+    width: 45px; height: 45px;
+    border: 2px solid #dee2e6; border-radius: 6px;
+    font-size: 0.7rem; font-weight: 600;
+    cursor: pointer; transition: all 0.2s;
+    background: #fff;
+}
+.seat-btn-fl.available { border-color: #198754; color: #198754; }
+.seat-btn-fl.available:hover { background: #198754; color: #fff; }
+.seat-btn-fl.booked { background: #dc3545; color: #fff; cursor: not-allowed; opacity: 0.7; border-color: #dc3545; }
+.seat-btn-fl.selected { background: #198754 !important; color: #fff !important; transform: scale(1.1); box-shadow: 0 0 10px rgba(25,135,84,0.5); }
+.seat-legend-fl { width: 20px; height: 20px; border-radius: 4px; display: inline-block; }
+.seat-legend-fl.available { border: 2px solid #198754; background: #fff; }
+.seat-legend-fl.booked { background: #dc3545; }
+.seat-legend-fl.selected { background: #198754; }
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+let selectedFlightSeat = null;
+function selectFlightSeat(seatId, element) {
+    document.querySelectorAll('.seat-btn-fl.selected').forEach(btn => btn.classList.remove('selected'));
+    if (selectedFlightSeat === seatId) {
+        selectedFlightSeat = null;
+        document.getElementById('selectedSeatInputFl').value = '';
+        document.getElementById('selectedSeatDisplayFl').textContent = 'None';
+        document.getElementById('bookBtnFl').disabled = true;
+        document.getElementById('bookBtnFl').innerHTML = '<i class="bi bi-cart-check me-2"></i> Select a Seat to Book';
+    } else {
+        selectedFlightSeat = seatId;
+        element.classList.add('selected');
+        document.getElementById('selectedSeatInputFl').value = seatId;
+        document.getElementById('selectedSeatDisplayFl').textContent = seatId;
+        document.getElementById('bookBtnFl').disabled = false;
+        document.getElementById('bookBtnFl').innerHTML = '<i class="bi bi-cart-check me-2"></i> Book Seat ' + seatId + ' - NPR {{ flight.price }}';
+    }
+}
+</script>
+{% endblock %}

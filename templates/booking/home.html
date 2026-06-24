@@ -1,0 +1,373 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}TravelEase - Online Bus & Flight Ticket Booking{% endblock %}
+
+{% block content %}
+
+<!-- ============================================= -->
+<!-- HERO SECTION -->
+<!-- ============================================= -->
+<section class="hero-section text-white text-center py-5" style="background: linear-gradient(135deg, #1a73e8 0%, #0d47a1 50%, #1a237e 100%);">
+    <div class="container py-5">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <h1 class="display-4 fw-bold mb-3 animate-fade-in">
+                    <i class="bi bi-airplane-engines me-2"></i>Travel<span class="text-warning">Ease</span>
+                </h1>
+                <p class="lead mb-4 text-light opacity-90">
+                    Nepal's Premier Online Platform for Bus & Flight Ticket Booking
+                </p>
+                <p class="mb-4 text-light opacity-75">
+                    Book buses and flights across Nepal — fast, secure, and hassle-free.
+                </p>
+
+                <!-- Search Form -->
+                <div class="card shadow-lg border-0 rounded-4 mt-4">
+                    <div class="card-body p-4">
+                        <!-- Search Tabs -->
+                        <ul class="nav nav-pills mb-4 justify-content-center" id="searchTabs" role="tablist">
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link active px-4 py-2" id="bus-tab" data-bs-toggle="pill"
+                                        data-bs-target="#bus-search" type="button" role="tab">
+                                    <i class="bi bi-bus-front me-1"></i> Search Bus
+                                </button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link px-4 py-2" id="flight-tab" data-bs-toggle="pill"
+                                        data-bs-target="#flight-search" type="button" role="tab">
+                                    <i class="bi bi-airplane me-1"></i> Search Flight
+                                </button>
+                            </li>
+                        </ul>
+
+                        <div class="tab-content">
+                            <!-- Bus Search Tab -->
+                            <div class="tab-pane fade show active" id="bus-search" role="tabpanel">
+                                <form action="{% url 'booking:search_buses' %}" method="GET" class="row g-3">
+                                    <div class="col-md-4">
+                                        <label class="form-label fw-semibold text-dark">
+                                            <i class="bi bi-geo-alt-fill text-danger"></i> From
+                                        </label>
+                                        <input type="text" name="departure" class="form-control form-control-lg"
+                                               placeholder="Departure City" list="cityList" required>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label class="form-label fw-semibold text-dark">
+                                            <i class="bi bi-geo-alt-fill text-success"></i> To
+                                        </label>
+                                        <input type="text" name="destination" class="form-control form-control-lg"
+                                               placeholder="Destination City" list="cityList" required>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label class="form-label fw-semibold text-dark">
+                                            <i class="bi bi-calendar3 text-primary"></i> Date
+                                        </label>
+                                        <input type="date" name="date" class="form-control form-control-lg"
+                                               min="{{ today|date:'Y-m-d' }}" value="{{ today|date:'Y-m-d' }}" required>
+                                    </div>
+                                    <div class="col-12 text-center mt-3">
+                                        <button type="submit" class="btn btn-primary btn-lg px-5 shadow">
+                                            <i class="bi bi-search me-2"></i> Search Buses
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+
+                            <!-- Flight Search Tab -->
+                            <div class="tab-pane fade" id="flight-search" role="tabpanel">
+                                <form action="{% url 'booking:search_flights' %}" method="GET" class="row g-3">
+                                    <div class="col-md-4">
+                                        <label class="form-label fw-semibold text-dark">
+                                            <i class="bi bi-geo-alt-fill text-danger"></i> From
+                                        </label>
+                                        <input type="text" name="departure" class="form-control form-control-lg"
+                                               placeholder="Departure City" list="cityList" required>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label class="form-label fw-semibold text-dark">
+                                            <i class="bi bi-geo-alt-fill text-success"></i> To
+                                        </label>
+                                        <input type="text" name="destination" class="form-control form-control-lg"
+                                               placeholder="Destination City" list="cityList" required>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label class="form-label fw-semibold text-dark">
+                                            <i class="bi bi-calendar3 text-primary"></i> Date
+                                        </label>
+                                        <input type="date" name="date" class="form-control form-control-lg"
+                                               min="{{ today|date:'Y-m-d' }}" value="{{ today|date:'Y-m-d' }}" required>
+                                    </div>
+                                    <div class="col-12 text-center mt-3">
+                                        <button type="submit" class="btn btn-primary btn-lg px-5 shadow">
+                                            <i class="bi bi-search me-2"></i> Search Flights
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+
+                        <!-- Datalist for city autocomplete -->
+                        <datalist id="cityList">
+                            {% for city in popular_cities %}
+                            <option value="{{ city }}">
+                            {% endfor %}
+                        </datalist>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ============================================= -->
+<!-- STATS SECTION -->
+<!-- ============================================= -->
+<section class="py-5 bg-light">
+    <div class="container">
+        <div class="row g-4 text-center">
+            <div class="col-md-3 col-6">
+                <div class="p-4 bg-white rounded-4 shadow-sm h-100">
+                    <i class="bi bi-bus-front display-4 text-primary"></i>
+                    <h3 class="fw-bold mt-2 text-primary">{{ total_buses }}+</h3>
+                    <p class="text-muted mb-0 fw-semibold">Bus Routes</p>
+                </div>
+            </div>
+            <div class="col-md-3 col-6">
+                <div class="p-4 bg-white rounded-4 shadow-sm h-100">
+                    <i class="bi bi-airplane display-4 text-success"></i>
+                    <h3 class="fw-bold mt-2 text-success">{{ total_flights }}+</h3>
+                    <p class="text-muted mb-0 fw-semibold">Flight Routes</p>
+                </div>
+            </div>
+            <div class="col-md-3 col-6">
+                <div class="p-4 bg-white rounded-4 shadow-sm h-100">
+                    <i class="bi bi-geo-alt display-4 text-danger"></i>
+                    <h3 class="fw-bold mt-2 text-danger">{{ total_routes }}+</h3>
+                    <p class="text-muted mb-0 fw-semibold">Destinations</p>
+                </div>
+            </div>
+            <div class="col-md-3 col-6">
+                <div class="p-4 bg-white rounded-4 shadow-sm h-100">
+                    <i class="bi bi-emoji-smile display-4 text-warning"></i>
+                    <h3 class="fw-bold mt-2 text-warning">10K+</h3>
+                    <p class="text-muted mb-0 fw-semibold">Happy Customers</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ============================================= -->
+<!-- FEATURES SECTION -->
+<!-- ============================================= -->
+<section class="py-5">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h2 class="fw-bold">Why Choose <span class="text-primary">TravelEase</span>?</h2>
+            <p class="text-muted">We make travel booking simple, fast, and reliable.</p>
+        </div>
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="card border-0 shadow-sm h-100 rounded-4 text-center p-4">
+                    <div class="card-body">
+                        <i class="bi bi-shield-check display-4 text-success"></i>
+                        <h5 class="fw-bold mt-3">Secure Booking</h5>
+                        <p class="text-muted">Your data is protected with industry-standard encryption and secure authentication.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card border-0 shadow-sm h-100 rounded-4 text-center p-4">
+                    <div class="card-body">
+                        <i class="bi bi-lightning-charge display-4 text-warning"></i>
+                        <h5 class="fw-bold mt-3">Instant Confirmation</h5>
+                        <p class="text-muted">Get booking confirmation via email instantly after successful payment.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card border-0 shadow-sm h-100 rounded-4 text-center p-4">
+                    <div class="card-body">
+                        <i class="bi bi-headset display-4 text-primary"></i>
+                        <h5 class="fw-bold mt-3">24/7 Support</h5>
+                        <p class="text-muted">Our customer support team is always ready to help you with any queries.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ============================================= -->
+<!-- UPCOMING BUSES -->
+<!-- ============================================= -->
+{% if upcoming_buses %}
+<section class="py-5 bg-light">
+    <div class="container">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h3 class="fw-bold mb-0"><i class="bi bi-bus-front text-primary me-2"></i>Upcoming Bus Schedules</h3>
+            <a href="{% url 'booking:all_buses' %}" class="btn btn-outline-primary">View All <i class="bi bi-arrow-right"></i></a>
+        </div>
+        <div class="row g-4">
+            {% for bus in upcoming_buses %}
+            <div class="col-md-6 col-lg-4">
+                <div class="card border-0 shadow-sm h-100 rounded-4 bus-card">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-start mb-3">
+                            <div>
+                                <h5 class="fw-bold mb-1">{{ bus.bus_name }}</h5>
+                                <span class="badge bg-primary">{{ bus.get_bus_type_display }}</span>
+                            </div>
+                            <span class="text-muted small">{{ bus.bus_number }}</span>
+                        </div>
+                        <hr>
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <div class="text-center">
+                                <h6 class="fw-bold text-dark mb-0">{{ bus.departure_time|time:"h:i A" }}</h6>
+                                <small class="text-muted">{{ bus.departure_city }}</small>
+                            </div>
+                            <div class="text-center">
+                                <i class="bi bi-arrow-right text-primary fs-5"></i>
+                                <br><small class="text-muted">{{ bus.duration }}</small>
+                            </div>
+                            <div class="text-center">
+                                <h6 class="fw-bold text-dark mb-0">{{ bus.arrival_time|time:"h:i A" }}</h6>
+                                <small class="text-muted">{{ bus.destination_city }}</small>
+                            </div>
+                        </div>
+                        <hr>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <span class="fw-bold text-primary fs-5">NPR {{ bus.price }}</span>
+                                <br><small class="text-muted">{{ bus.available_seats }} seats left</small>
+                            </div>
+                            <a href="{% url 'booking:bus_detail' bus.id %}" class="btn btn-primary btn-sm">
+                                Book Now <i class="bi bi-arrow-right"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<!-- ============================================= -->
+<!-- UPCOMING FLIGHTS -->
+<!-- ============================================= -->
+{% if upcoming_flights %}
+<section class="py-5">
+    <div class="container">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h3 class="fw-bold mb-0"><i class="bi bi-airplane text-success me-2"></i>Upcoming Flight Schedules</h3>
+            <a href="{% url 'booking:all_flights' %}" class="btn btn-outline-success">View All <i class="bi bi-arrow-right"></i></a>
+        </div>
+        <div class="row g-4">
+            {% for flight in upcoming_flights %}
+            <div class="col-md-6 col-lg-4">
+                <div class="card border-0 shadow-sm h-100 rounded-4 flight-card">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-start mb-3">
+                            <div>
+                                <h5 class="fw-bold mb-1">{{ flight.airline }}</h5>
+                                <span class="badge bg-success">{{ flight.get_flight_type_display }}</span>
+                            </div>
+                            <span class="text-muted small">{{ flight.flight_number }}</span>
+                        </div>
+                        <hr>
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <div class="text-center">
+                                <h6 class="fw-bold text-dark mb-0">{{ flight.departure_time|time:"h:i A" }}</h6>
+                                <small class="text-muted">{{ flight.departure_city }}</small>
+                            </div>
+                            <div class="text-center">
+                                <i class="bi bi-airplane text-success fs-5"></i>
+                                <br><small class="text-muted">{{ flight.duration }}</small>
+                            </div>
+                            <div class="text-center">
+                                <h6 class="fw-bold text-dark mb-0">{{ flight.arrival_time|time:"h:i A" }}</h6>
+                                <small class="text-muted">{{ flight.destination_city }}</small>
+                            </div>
+                        </div>
+                        <hr>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <span class="fw-bold text-success fs-5">NPR {{ flight.price }}</span>
+                                <br><small class="text-muted">{{ flight.available_seats }} seats left</small>
+                            </div>
+                            <a href="{% url 'booking:flight_detail' flight.id %}" class="btn btn-success btn-sm">
+                                Book Now <i class="bi bi-arrow-right"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<!-- ============================================= -->
+<!-- POPULAR ROUTES -->
+<!-- ============================================= -->
+<section class="py-5 bg-dark text-white">
+    <div class="container">
+        <h3 class="fw-bold text-center mb-4">Popular Routes</h3>
+        <div class="row g-3 justify-content-center">
+            <div class="col-md-2 col-4">
+                <a href="{% url 'booking:search_buses' %}?departure=Kathmandu&destination=Pokhara"
+                   class="btn btn-outline-light w-100 py-3 rounded-4">
+                    Kathmandu → Pokhara
+                </a>
+            </div>
+            <div class="col-md-2 col-4">
+                <a href="{% url 'booking:search_buses' %}?departure=Pokhara&destination=Kathmandu"
+                   class="btn btn-outline-light w-100 py-3 rounded-4">
+                    Pokhara → Kathmandu
+                </a>
+            </div>
+            <div class="col-md-2 col-4">
+                <a href="{% url 'booking:search_buses' %}?departure=Kathmandu&destination=Chitwan"
+                   class="btn btn-outline-light w-100 py-3 rounded-4">
+                    Kathmandu → Chitwan
+                </a>
+            </div>
+            <div class="col-md-2 col-4">
+                <a href="{% url 'booking:search_buses' %}?departure=Kathmandu&destination=Lumbini"
+                   class="btn btn-outline-light w-100 py-3 rounded-4">
+                    Kathmandu → Lumbini
+                </a>
+            </div>
+            <div class="col-md-2 col-4">
+                <a href="{% url 'booking:search_flights' %}?departure=Kathmandu&destination=Pokhara"
+                   class="btn btn-outline-light w-100 py-3 rounded-4">
+                    KTM → PKR ✈
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Animate hero text on load
+document.addEventListener('DOMContentLoaded', function() {
+    const heroTitle = document.querySelector('.animate-fade-in');
+    if (heroTitle) {
+        heroTitle.style.opacity = '0';
+        heroTitle.style.transform = 'translateY(20px)';
+        heroTitle.style.transition = 'all 0.8s ease';
+        setTimeout(() => {
+            heroTitle.style.opacity = '1';
+            heroTitle.style.transform = 'translateY(0)';
+        }, 100);
+    }
+});
+</script>
+{% endblock %}

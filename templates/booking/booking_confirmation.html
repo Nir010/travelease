@@ -1,0 +1,150 @@
+{% extends 'base.html' %}
+
+{% block title %}Booking Confirmed! - TravelEase{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <!-- Success Banner -->
+    <div class="text-center mb-4">
+        <div class="d-inline-flex align-items-center justify-content-center bg-success rounded-circle mb-3"
+             style="width: 80px; height: 80px;">
+            <i class="bi bi-check-lg text-white display-4"></i>
+        </div>
+        <h2 class="fw-bold text-success">Booking Confirmed!</h2>
+        <p class="text-muted">Your ticket has been booked successfully.</p>
+    </div>
+
+    <!-- Booking Details Card -->
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card border-0 shadow-lg rounded-4">
+                <div class="card-header bg-primary text-white text-center py-3 rounded-top-4">
+                    <h5 class="mb-0"><i class="bi bi-ticket-perforated me-2"></i>E-Ticket</h5>
+                </div>
+                <div class="card-body p-4">
+                    <!-- Reference -->
+                    <div class="text-center mb-4">
+                        <small class="text-muted">Booking Reference</small>
+                        <h3 class="fw-bold text-primary">{{ booking.booking_reference }}</h3>
+                        <span class="badge bg-success fs-6">{{ booking.status }}</span>
+                    </div>
+
+                    <hr>
+
+                    <!-- Passenger -->
+                    <h6 class="fw-bold text-uppercase text-muted mb-3">Passenger Details</h6>
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-6">
+                            <small class="text-muted">Name</small>
+                            <p class="fw-semibold mb-0">{{ booking.passenger_name }}</p>
+                        </div>
+                        <div class="col-md-6">
+                            <small class="text-muted">Email</small>
+                            <p class="fw-semibold mb-0">{{ booking.passenger_email }}</p>
+                        </div>
+                        <div class="col-md-6">
+                            <small class="text-muted">Phone</small>
+                            <p class="fw-semibold mb-0">{{ booking.passenger_phone }}</p>
+                        </div>
+                        <div class="col-md-6">
+                            <small class="text-muted">Seat Number</small>
+                            <p class="mb-0"><span class="badge bg-primary fs-6 px-3">{{ booking.seat_number }}</span></p>
+                        </div>
+                    </div>
+
+                    <!-- Journey -->
+                    <h6 class="fw-bold text-uppercase text-muted mb-3">Journey Details</h6>
+                    <div class="card bg-light border-0 rounded-4 p-3 mb-4">
+                        <div class="row text-center align-items-center">
+                            <div class="col-5">
+                                <h5 class="fw-bold mb-0">{{ booking.get_departure_datetime|slice:":10" }}</h5>
+                                <small class="text-muted">{{ booking.get_departure_datetime|slice:"13:" }}</small>
+                                <p class="fw-bold mt-1 mb-0">
+                                    {% if booking.booking_type == 'BUS' and booking.bus %}
+                                        {{ booking.bus.departure_city }}
+                                    {% elif booking.booking_type == 'FLIGHT' and booking.flight %}
+                                        {{ booking.flight.departure_city }}
+                                    {% endif %}
+                                </p>
+                            </div>
+                            <div class="col-2">
+                                {% if booking.booking_type == 'BUS' %}
+                                <i class="bi bi-bus-front fs-3 text-primary"></i>
+                                {% else %}
+                                <i class="bi bi-airplane fs-3 text-success"></i>
+                                {% endif %}
+                            </div>
+                            <div class="col-5">
+                                <p class="fw-bold mt-1 mb-0">
+                                    {% if booking.booking_type == 'BUS' and booking.bus %}
+                                        {{ booking.bus.destination_city }}
+                                    {% elif booking.booking_type == 'FLIGHT' and booking.flight %}
+                                        {{ booking.flight.destination_city }}
+                                    {% endif %}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Transport Info -->
+                    <h6 class="fw-bold text-uppercase text-muted mb-3">Transport Details</h6>
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-6">
+                            <small class="text-muted">Transport</small>
+                            <p class="fw-semibold mb-0">{{ booking.get_transport_name }}</p>
+                        </div>
+                        <div class="col-md-6">
+                            <small class="text-muted">Type</small>
+                            <p class="fw-semibold mb-0">{{ booking.booking_type }}</p>
+                        </div>
+                        <div class="col-md-6">
+                            <small class="text-muted">Route</small>
+                            <p class="fw-semibold mb-0">{{ booking.get_route }}</p>
+                        </div>
+                        <div class="col-md-6">
+                            <small class="text-muted">Total Fare</small>
+                            <p class="fw-bold text-primary mb-0">NPR {{ booking.total_price }}</p>
+                        </div>
+                    </div>
+
+                    <!-- Payment Info -->
+                    {% if payment %}
+                    <h6 class="fw-bold text-uppercase text-muted mb-3">Payment Details</h6>
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-4">
+                            <small class="text-muted">Method</small>
+                            <p class="fw-semibold mb-0">{{ payment.payment_method }}</p>
+                        </div>
+                        <div class="col-md-4">
+                            <small class="text-muted">Transaction ID</small>
+                            <p class="fw-semibold mb-0" style="font-size: 0.8rem;">{{ payment.transaction_id }}</p>
+                        </div>
+                        <div class="col-md-4">
+                            <small class="text-muted">Status</small>
+                            <p class="mb-0"><span class="badge bg-success">{{ payment.payment_status }}</span></p>
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    <hr>
+
+                    <div class="alert alert-success mb-0">
+                        <i class="bi bi-envelope-check me-2"></i>
+                        A confirmation email has been sent to <strong>{{ booking.passenger_email }}</strong>.
+                    </div>
+
+                    <!-- Actions -->
+                    <div class="d-flex justify-content-center gap-3 mt-4">
+                        <a href="{% url 'accounts:profile' %}" class="btn btn-primary">
+                            <i class="bi bi-speedometer2 me-1"></i> My Dashboard
+                        </a>
+                        <a href="{% url 'booking:home' %}" class="btn btn-outline-primary">
+                            <i class="bi bi-house me-1"></i> Go Home
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

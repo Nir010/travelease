@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+
+{% block title %}Edit Profile - TravelEase{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-6">
+            <div class="card border-0 shadow-sm rounded-4">
+                <div class="card-body p-4">
+                    <h4 class="fw-bold mb-4"><i class="bi bi-gear me-2"></i>Edit Profile</h4>
+                    <form method="POST" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <div class="row g-3">
+                            <div class="col-6">
+                                <label class="form-label fw-semibold">First Name</label>
+                                <input type="text" name="first_name" class="form-control" value="{{ user.first_name }}">
+                            </div>
+                            <div class="col-6">
+                                <label class="form-label fw-semibold">Last Name</label>
+                                <input type="text" name="last_name" class="form-control" value="{{ user.last_name }}">
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label fw-semibold">Phone Number</label>
+                                <input type="tel" name="phone" class="form-control" value="{{ user.profile.phone_number }}">
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label fw-semibold">Address</label>
+                                <textarea name="address" class="form-control" rows="2">{{ user.profile.address }}</textarea>
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label fw-semibold">Date of Birth</label>
+                                <input type="date" name="date_of_birth" class="form-control"
+                                       value="{{ user.profile.date_of_birth|date:'Y-m-d' }}">
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label fw-semibold">Profile Picture</label>
+                                <input type="file" name="avatar" class="form-control" accept="image/*">
+                            </div>
+                            <div class="col-12 mt-3">
+                                <button type="submit" class="btn btn-primary px-4">
+                                    <i class="bi bi-check-lg me-1"></i> Save Changes
+                                </button>
+                                <a href="{% url 'accounts:profile' %}" class="btn btn-outline-secondary ms-2">Cancel</a>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

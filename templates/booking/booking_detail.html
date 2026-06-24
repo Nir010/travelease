@@ -1,0 +1,77 @@
+{% extends 'base.html' %}
+
+{% block title %}Booking {{ booking.booking_reference }} - TravelEase{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <nav aria-label="breadcrumb" class="mb-3">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'booking:home' %}">Home</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'accounts:profile' %}">Dashboard</a></li>
+            <li class="breadcrumb-item active">{{ booking.booking_reference }}</li>
+        </ol>
+    </nav>
+
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card border-0 shadow-sm rounded-4">
+                <div class="card-body p-4">
+                    <div class="d-flex justify-content-between align-items-start mb-4">
+                        <div>
+                            <h4 class="fw-bold mb-1">Booking Details</h4>
+                            <span class="text-primary fw-bold">{{ booking.booking_reference }}</span>
+                        </div>
+                        <span class="badge {% if booking.status == 'CONFIRMED' %}bg-success{% elif booking.status == 'PENDING' %}bg-warning text-dark{% elif booking.status == 'CANCELLED' %}bg-danger{% else %}bg-info{% endif %} fs-6">
+                            {{ booking.status }}
+                        </span>
+                    </div>
+
+                    <table class="table table-bordered">
+                        <tr><th class="bg-light" width="40%">Booking Type</th><td>{{ booking.booking_type }}</td></tr>
+                        <tr><th class="bg-light">Transport</th><td>{{ booking.get_transport_name }}</td></tr>
+                        <tr><th class="bg-light">Route</th><td>{{ booking.get_route }}</td></tr>
+                        <tr><th class="bg-light">Departure</th><td>{{ booking.get_departure_datetime }}</td></tr>
+                        <tr><th class="bg-light">Passenger</th><td>{{ booking.passenger_name }}</td></tr>
+                        <tr><th class="bg-light">Email</th><td>{{ booking.passenger_email }}</td></tr>
+                        <tr><th class="bg-light">Phone</th><td>{{ booking.passenger_phone }}</td></tr>
+                        <tr><th class="bg-light">Seat Number</th><td><span class="badge bg-primary">{{ booking.seat_number }}</span></td></tr>
+                        <tr><th class="bg-light">Total Price</th><td class="fw-bold text-primary">NPR {{ booking.total_price }}</td></tr>
+                        <tr><th class="bg-light">Booked On</th><td>{{ booking.booking_date|date:"F d, Y h:i A" }}</td></tr>
+                    </table>
+
+                    {% if payment %}
+                    <h6 class="fw-bold mt-4">Payment Info</h6>
+                    <table class="table table-bordered">
+                        <tr><th class="bg-light" width="40%">Method</th><td>{{ payment.payment_method }}</td></tr>
+                        <tr><th class="bg-light">Transaction ID</th><td>{{ payment.transaction_id }}</td></tr>
+                        <tr><th class="bg-light">Payment Status</th><td><span class="badge bg-success">{{ payment.payment_status }}</span></td></tr>
+                        <tr><th class="bg-light">Paid On</th><td>{{ payment.payment_date|date:"F d, Y h:i A" }}</td></tr>
+                    </table>
+                    {% endif %}
+
+                    <div class="d-flex gap-2 mt-4">
+                        {% if booking.status == 'PENDING' %}
+                        <a href="{% url 'payment:make_payment' booking.id %}" class="btn btn-success">
+                            <i class="bi bi-credit-card me-1"></i> Pay Now
+                        </a>
+                        {% endif %}
+                        {% if booking.status == 'CONFIRMED' %}
+                        <a href="{% url 'booking:booking_confirmation' booking.id %}" class="btn btn-primary">
+                            <i class="bi bi-ticket-perforated me-1"></i> View E-Ticket
+                        </a>
+                        {% endif %}
+                        {% if booking.status in 'PENDING,CONFIRMED' %}
+                        <a href="{% url 'booking:cancel_booking' booking.id %}" class="btn btn-outline-danger">
+                            <i class="bi bi-x-circle me-1"></i> Cancel Booking
+                        </a>
+                        {% endif %}
+                        <a href="{% url 'accounts:profile' %}" class="btn btn-outline-secondary">
+                            <i class="bi bi-arrow-left me-1"></i> Back
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

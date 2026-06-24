@@ -1,0 +1,126 @@
+{% extends 'base.html' %}
+
+{% block title %}My Dashboard - TravelEase{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <!-- Dashboard Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="fw-bold mb-1"><i class="bi bi-speedometer2 text-primary me-2"></i>My Dashboard</h2>
+            <p class="text-muted">Welcome back, {{ user.get_full_name|default:user.username }}!</p>
+        </div>
+        <a href="{% url 'accounts:edit_profile' %}" class="btn btn-outline-primary">
+            <i class="bi bi-pencil"></i> Edit Profile
+        </a>
+    </div>
+
+    <!-- Stats Cards -->
+    <div class="row g-3 mb-4">
+        <div class="col-md-3 col-6">
+            <div class="card border-0 shadow-sm rounded-4 text-center p-3">
+                <i class="bi bi-receipt display-6 text-primary"></i>
+                <h3 class="fw-bold mb-0">{{ total_bookings }}</h3>
+                <small class="text-muted">Total Bookings</small>
+            </div>
+        </div>
+        <div class="col-md-3 col-6">
+            <div class="card border-0 shadow-sm rounded-4 text-center p-3">
+                <i class="bi bi-check-circle display-6 text-success"></i>
+                <h3 class="fw-bold mb-0">{{ active_bookings }}</h3>
+                <small class="text-muted">Active</small>
+            </div>
+        </div>
+        <div class="col-md-3 col-6">
+            <div class="card border-0 shadow-sm rounded-4 text-center p-3">
+                <i class="bi bi-flag display-6 text-info"></i>
+                <h3 class="fw-bold mb-0">{{ completed_bookings }}</h3>
+                <small class="text-muted">Completed</small>
+            </div>
+        </div>
+        <div class="col-md-3 col-6">
+            <div class="card border-0 shadow-sm rounded-4 text-center p-3">
+                <i class="bi bi-x-circle display-6 text-danger"></i>
+                <h3 class="fw-bold mb-0">{{ cancelled_bookings }}</h3>
+                <small class="text-muted">Cancelled</small>
+            </div>
+        </div>
+    </div>
+
+    <!-- Booking History -->
+    <div class="card border-0 shadow-sm rounded-4">
+        <div class="card-body p-4">
+            <h5 class="fw-bold mb-4"><i class="bi bi-clock-history me-2"></i>Booking History</h5>
+
+            {% if bookings %}
+            <div class="table-responsive">
+                <table class="table table-hover align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Reference</th>
+                            <th>Type</th>
+                            <th>Route</th>
+                            <th>Seat</th>
+                            <th>Amount</th>
+                            <th>Status</th>
+                            <th>Date</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for booking in bookings %}
+                        <tr>
+                            <td><span class="fw-semibold text-primary">{{ booking.booking_reference }}</span></td>
+                            <td>
+                                {% if booking.booking_type == 'BUS' %}
+                                <i class="bi bi-bus-front text-primary"></i> Bus
+                                {% else %}
+                                <i class="bi bi-airplane text-success"></i> Flight
+                                {% endif %}
+                            </td>
+                            <td>{{ booking.get_route }}</td>
+                            <td><span class="badge bg-secondary">{{ booking.seat_number }}</span></td>
+                            <td class="fw-semibold">NPR {{ booking.total_price }}</td>
+                            <td>
+                                {% if booking.status == 'CONFIRMED' %}
+                                <span class="badge bg-success">Confirmed</span>
+                                {% elif booking.status == 'PENDING' %}
+                                <span class="badge bg-warning text-dark">Pending</span>
+                                {% elif booking.status == 'CANCELLED' %}
+                                <span class="badge bg-danger">Cancelled</span>
+                                {% elif booking.status == 'COMPLETED' %}
+                                <span class="badge bg-info">Completed</span>
+                                {% endif %}
+                            </td>
+                            <td><small class="text-muted">{{ booking.booking_date|date:"M d, Y" }}</small></td>
+                            <td>
+                                <div class="btn-group btn-group-sm">
+                                    <a href="{% url 'booking:booking_detail' booking.id %}" class="btn btn-outline-primary">
+                                        <i class="bi bi-eye"></i>
+                                    </a>
+                                    {% if booking.status == 'PENDING' %}
+                                    <a href="{% url 'payment:make_payment' booking.id %}" class="btn btn-outline-success">
+                                        <i class="bi bi-credit-card"></i>
+                                    </a>
+                                    {% endif %}
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="text-center py-5">
+                <i class="bi bi-inbox display-3 text-muted"></i>
+                <h5 class="text-muted mt-3">No bookings yet</h5>
+                <p>Start by searching for buses or flights!</p>
+                <a href="{% url 'booking:home' %}" class="btn btn-primary">
+                    <i class="bi bi-search me-1"></i> Search Now
+                </a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
