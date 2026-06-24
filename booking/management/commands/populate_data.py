@@ -1,4 +1,4 @@
-http://127.0.0.1:8000/"""
+"""
 TravelEase - Dummy Data Population Command
 ==========================================
 This management command populates the database with 200+ dummy records:

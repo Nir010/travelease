@@ -24,7 +24,7 @@ SECRET_KEY = 'django-insecure-travelease-dev-key-change-in-production-2024'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 # DEBUG=True shows detailed error pages during development
-DEBUG = False
+DEBUG = True
 
 # ALLOWED_HOSTS lists which domains/IPs Django can serve
 # '*' means any host can access this during development
@@ -112,22 +112,13 @@ WSGI_APPLICATION = 'travelease.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'traveleasedb',
-        'USER': 'travelease',
-        'PASSWORD': 'travelease123',
-        'HOST': 'localhost',
-        'PORT': '5432',
+        'NAME': os.environ.get('PGDATABASE', 'traveleasedb'),
+        'USER': os.environ.get('PGUSER', 'travelease'),
+        'PASSWORD': os.environ.get('PGPASSWORD', 'travelease123'),
+        'HOST': os.environ.get('PGHOST', 'localhost'),
+        'PORT': os.environ.get('PGPORT', '5432'),
     }
 }
-
-# Fallback to SQLite if PostgreSQL is unavailable during development
-# Uncomment this block if PostgreSQL isn't ready yet:
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.sqlite3',
-#         'NAME': BASE_DIR / 'db.sqlite3',
-#     }
-# }
 
 
 # =============================================
