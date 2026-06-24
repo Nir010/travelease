@@ -30,6 +30,18 @@ DEBUG = True
 # '*' means any host can access this during development
 ALLOWED_HOSTS = ['*']
 
+# Trust Replit's proxy for CSRF
+CSRF_TRUSTED_ORIGINS = [
+    'https://*.replit.dev',
+    'https://*.repl.co',
+    'https://*.replit.app',
+    'https://*.kirk.replit.dev',
+]
+
+# Ensure CSRF cookie works through proxy
+CSRF_COOKIE_SECURE = False
+SESSION_COOKIE_SECURE = False
+
 
 # =============================================
 # APPLICATION DEFINITION
