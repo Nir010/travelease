@@ -146,13 +146,16 @@ For any queries, contact support@travelease.com
 
 Safe travels! ✈️🚌
 """
-    send_mail(
-        subject=email_subject,
-        message=email_message,
-        from_email=settings.DEFAULT_FROM_EMAIL,
-        recipient_list=[booking.passenger_email],
-        fail_silently=False,
-    )
+    try:
+        send_mail(
+            subject=email_subject,
+            message=email_message,
+            from_email=settings.DEFAULT_FROM_EMAIL,
+            recipient_list=[booking.passenger_email],
+            fail_silently=False,
+        )
+    except Exception:
+        pass  # Email delivery is best-effort; booking is already confirmed
 
     messages.success(request, f'Payment successful! Booking {booking.booking_reference} confirmed.')
     return redirect('booking:booking_confirmation', booking_id=booking.id)

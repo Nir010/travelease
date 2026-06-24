@@ -52,27 +52,23 @@ def home(request):
         is_active=True
     ).order_by('departure_date', 'departure_time')[:6]
 
-    # Distinct cities actually present in the database
-    bus_departure_cities = sorted(
+    # Distinct cities actually present in the database (set() guarantees no duplicates)
+    bus_departure_cities = sorted(set(
         Bus.objects.filter(is_active=True)
         .values_list('departure_city', flat=True)
-        .distinct()
-    )
-    bus_destination_cities = sorted(
+    ))
+    bus_destination_cities = sorted(set(
         Bus.objects.filter(is_active=True)
         .values_list('destination_city', flat=True)
-        .distinct()
-    )
-    flight_departure_cities = sorted(
+    ))
+    flight_departure_cities = sorted(set(
         Flight.objects.filter(is_active=True)
         .values_list('departure_city', flat=True)
-        .distinct()
-    )
-    flight_destination_cities = sorted(
+    ))
+    flight_destination_cities = sorted(set(
         Flight.objects.filter(is_active=True)
         .values_list('destination_city', flat=True)
-        .distinct()
-    )
+    ))
 
     # Stats for homepage
     total_buses = Bus.objects.filter(is_active=True).count()
