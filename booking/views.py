@@ -52,12 +52,27 @@ def home(request):
         is_active=True
     ).order_by('departure_date', 'departure_time')[:6]
 
-    # Get popular cities (for quick search links)
-    popular_cities = [
-        'Kathmandu', 'Pokhara', 'Chitwan', 'Lumbini',
-        'Biratnagar', 'Nepalgunj', 'Butwal', 'Dharan',
-        'Janakpur', 'Bhairahawa'
-    ]
+    # Distinct cities actually present in the database
+    bus_departure_cities = sorted(
+        Bus.objects.filter(is_active=True)
+        .values_list('departure_city', flat=True)
+        .distinct()
+    )
+    bus_destination_cities = sorted(
+        Bus.objects.filter(is_active=True)
+        .values_list('destination_city', flat=True)
+        .distinct()
+    )
+    flight_departure_cities = sorted(
+        Flight.objects.filter(is_active=True)
+        .values_list('departure_city', flat=True)
+        .distinct()
+    )
+    flight_destination_cities = sorted(
+        Flight.objects.filter(is_active=True)
+        .values_list('destination_city', flat=True)
+        .distinct()
+    )
 
     # Stats for homepage
     total_buses = Bus.objects.filter(is_active=True).count()
@@ -69,7 +84,10 @@ def home(request):
     context = {
         'upcoming_buses': upcoming_buses,
         'upcoming_flights': upcoming_flights,
-        'popular_cities': popular_cities,
+        'bus_departure_cities': bus_departure_cities,
+        'bus_destination_cities': bus_destination_cities,
+        'flight_departure_cities': flight_departure_cities,
+        'flight_destination_cities': flight_destination_cities,
         'total_buses': total_buses,
         'total_flights': total_flights,
         'total_routes': total_routes,

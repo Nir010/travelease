@@ -44,20 +44,48 @@
                         <div class="tab-content">
                             <!-- Bus Search Tab -->
                             <div class="tab-pane fade show active" id="bus-search" role="tabpanel">
-                                <form action="{% url 'booking:search_buses' %}" method="GET" class="row g-3">
+                                <form action="{% url 'booking:search_buses' %}" method="GET" class="row g-3" id="busSearchForm">
                                     <div class="col-md-4">
                                         <label class="form-label fw-semibold text-dark">
                                             <i class="bi bi-geo-alt-fill text-danger"></i> From
                                         </label>
-                                        <input type="text" name="departure" class="form-control form-control-lg"
-                                               placeholder="Departure City" list="cityList" required>
+                                        <div class="city-dropdown-wrap">
+                                            <input type="text" name="departure" id="busDep"
+                                                   class="form-control form-control-lg city-input"
+                                                   placeholder="Select departure city"
+                                                   autocomplete="off" required readonly
+                                                   data-list="busDepartureCities">
+                                            <i class="bi bi-chevron-down city-arrow"></i>
+                                            <div class="city-dropdown-menu" id="busDepartureCities-menu">
+                                                <input type="text" class="city-search-input" placeholder="Search city...">
+                                                <ul class="city-list">
+                                                    {% for city in bus_departure_cities %}
+                                                    <li data-value="{{ city }}">{{ city }}</li>
+                                                    {% endfor %}
+                                                </ul>
+                                            </div>
+                                        </div>
                                     </div>
                                     <div class="col-md-4">
                                         <label class="form-label fw-semibold text-dark">
                                             <i class="bi bi-geo-alt-fill text-success"></i> To
                                         </label>
-                                        <input type="text" name="destination" class="form-control form-control-lg"
-                                               placeholder="Destination City" list="cityList" required>
+                                        <div class="city-dropdown-wrap">
+                                            <input type="text" name="destination" id="busDest"
+                                                   class="form-control form-control-lg city-input"
+                                                   placeholder="Select destination city"
+                                                   autocomplete="off" required readonly
+                                                   data-list="busDestinationCities">
+                                            <i class="bi bi-chevron-down city-arrow"></i>
+                                            <div class="city-dropdown-menu" id="busDestinationCities-menu">
+                                                <input type="text" class="city-search-input" placeholder="Search city...">
+                                                <ul class="city-list">
+                                                    {% for city in bus_destination_cities %}
+                                                    <li data-value="{{ city }}">{{ city }}</li>
+                                                    {% endfor %}
+                                                </ul>
+                                            </div>
+                                        </div>
                                     </div>
                                     <div class="col-md-4">
                                         <label class="form-label fw-semibold text-dark">
@@ -76,20 +104,48 @@
 
                             <!-- Flight Search Tab -->
                             <div class="tab-pane fade" id="flight-search" role="tabpanel">
-                                <form action="{% url 'booking:search_flights' %}" method="GET" class="row g-3">
+                                <form action="{% url 'booking:search_flights' %}" method="GET" class="row g-3" id="flightSearchForm">
                                     <div class="col-md-4">
                                         <label class="form-label fw-semibold text-dark">
                                             <i class="bi bi-geo-alt-fill text-danger"></i> From
                                         </label>
-                                        <input type="text" name="departure" class="form-control form-control-lg"
-                                               placeholder="Departure City" list="cityList" required>
+                                        <div class="city-dropdown-wrap">
+                                            <input type="text" name="departure" id="flightDep"
+                                                   class="form-control form-control-lg city-input"
+                                                   placeholder="Select departure city"
+                                                   autocomplete="off" required readonly
+                                                   data-list="flightDepartureCities">
+                                            <i class="bi bi-chevron-down city-arrow"></i>
+                                            <div class="city-dropdown-menu" id="flightDepartureCities-menu">
+                                                <input type="text" class="city-search-input" placeholder="Search city...">
+                                                <ul class="city-list">
+                                                    {% for city in flight_departure_cities %}
+                                                    <li data-value="{{ city }}">{{ city }}</li>
+                                                    {% endfor %}
+                                                </ul>
+                                            </div>
+                                        </div>
                                     </div>
                                     <div class="col-md-4">
                                         <label class="form-label fw-semibold text-dark">
                                             <i class="bi bi-geo-alt-fill text-success"></i> To
                                         </label>
-                                        <input type="text" name="destination" class="form-control form-control-lg"
-                                               placeholder="Destination City" list="cityList" required>
+                                        <div class="city-dropdown-wrap">
+                                            <input type="text" name="destination" id="flightDest"
+                                                   class="form-control form-control-lg city-input"
+                                                   placeholder="Select destination city"
+                                                   autocomplete="off" required readonly
+                                                   data-list="flightDestinationCities">
+                                            <i class="bi bi-chevron-down city-arrow"></i>
+                                            <div class="city-dropdown-menu" id="flightDestinationCities-menu">
+                                                <input type="text" class="city-search-input" placeholder="Search city...">
+                                                <ul class="city-list">
+                                                    {% for city in flight_destination_cities %}
+                                                    <li data-value="{{ city }}">{{ city }}</li>
+                                                    {% endfor %}
+                                                </ul>
+                                            </div>
+                                        </div>
                                     </div>
                                     <div class="col-md-4">
                                         <label class="form-label fw-semibold text-dark">
@@ -106,13 +162,6 @@
                                 </form>
                             </div>
                         </div>
-
-                        <!-- Datalist for city autocomplete -->
-                        <datalist id="cityList">
-                            {% for city in popular_cities %}
-                            <option value="{{ city }}">
-                            {% endfor %}
-                        </datalist>
                     </div>
                 </div>
             </div>
@@ -354,10 +403,114 @@
 
 {% endblock %}
 
+{% block extra_css %}
+<style>
+/* ── City dropdown wrapper ── */
+.city-dropdown-wrap {
+    position: relative;
+}
+.city-dropdown-wrap .city-arrow {
+    position: absolute;
+    right: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #6c757d;
+    pointer-events: none;
+    transition: transform .2s;
+    font-size: 0.9rem;
+}
+.city-dropdown-wrap.open .city-arrow {
+    transform: translateY(-50%) rotate(180deg);
+}
+.city-input {
+    cursor: pointer;
+    background-color: #fff !important;
+    padding-right: 2.5rem;
+}
+.city-input:focus {
+    border-color: #1a56db;
+    box-shadow: 0 0 0 0.2rem rgba(26,86,219,.2);
+}
+
+/* ── Dropdown panel ── */
+.city-dropdown-menu {
+    display: none;
+    position: absolute;
+    top: calc(100% + 4px);
+    left: 0;
+    right: 0;
+    z-index: 9999;
+    background: #fff;
+    border: 1px solid #dee2e6;
+    border-radius: 10px;
+    box-shadow: 0 8px 24px rgba(0,0,0,.12);
+    overflow: hidden;
+}
+.city-dropdown-wrap.open .city-dropdown-menu {
+    display: block;
+}
+
+/* ── Inner search box ── */
+.city-search-input {
+    width: 100%;
+    border: none;
+    border-bottom: 1px solid #f0f0f0;
+    padding: 10px 14px;
+    font-size: 0.9rem;
+    outline: none;
+    background: #f8f9fa;
+}
+.city-search-input:focus {
+    background: #fff;
+}
+
+/* ── City list ── */
+.city-list {
+    list-style: none;
+    margin: 0;
+    padding: 4px 0;
+    max-height: 220px;
+    overflow-y: auto;
+}
+.city-list li {
+    padding: 9px 16px;
+    cursor: pointer;
+    font-size: 0.95rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: background .15s;
+}
+.city-list li::before {
+    content: '\F3E0';
+    font-family: 'Bootstrap Icons';
+    font-size: 0.75rem;
+    color: #1a56db;
+    opacity: 0.7;
+}
+.city-list li:hover,
+.city-list li.highlighted {
+    background: #e8f0fe;
+    color: #1a56db;
+    font-weight: 600;
+}
+.city-list li.hidden { display: none; }
+.city-list .no-results {
+    padding: 12px 16px;
+    color: #999;
+    font-size: 0.9rem;
+    text-align: center;
+    cursor: default;
+}
+.city-list .no-results::before { display: none; }
+</style>
+{% endblock %}
+
 {% block extra_js %}
 <script>
-// Animate hero text on load
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
+
+    /* ── Hero animation ── */
     const heroTitle = document.querySelector('.animate-fade-in');
     if (heroTitle) {
         heroTitle.style.opacity = '0';
@@ -368,6 +521,101 @@ document.addEventListener('DOMContentLoaded', function() {
             heroTitle.style.transform = 'translateY(0)';
         }, 100);
     }
+
+    /* ── City dropdown logic ── */
+    function initDropdown(wrap) {
+        const input      = wrap.querySelector('.city-input');
+        const menu       = wrap.querySelector('.city-dropdown-menu');
+        const searchBox  = wrap.querySelector('.city-search-input');
+        const listEl     = wrap.querySelector('.city-list');
+        const allItems   = Array.from(listEl.querySelectorAll('li:not(.no-results)'));
+
+        function open() {
+            wrap.classList.add('open');
+            searchBox.value = '';
+            filterList('');
+            searchBox.focus();
+        }
+
+        function close() {
+            wrap.classList.remove('open');
+        }
+
+        function filterList(query) {
+            const q = query.toLowerCase().trim();
+            let visible = 0;
+            allItems.forEach(li => {
+                const match = li.dataset.value.toLowerCase().includes(q);
+                li.classList.toggle('hidden', !match);
+                if (match) visible++;
+            });
+            // show/hide no-results message
+            let noRes = listEl.querySelector('.no-results');
+            if (visible === 0) {
+                if (!noRes) {
+                    noRes = document.createElement('li');
+                    noRes.className = 'no-results';
+                    noRes.textContent = 'No cities found';
+                    listEl.appendChild(noRes);
+                }
+                noRes.style.display = '';
+            } else if (noRes) {
+                noRes.style.display = 'none';
+            }
+        }
+
+        /* open on click on the visible input */
+        input.addEventListener('click', () => {
+            wrap.classList.contains('open') ? close() : open();
+        });
+
+        /* filter as user types in the search box */
+        searchBox.addEventListener('input', () => filterList(searchBox.value));
+
+        /* select a city */
+        listEl.addEventListener('click', e => {
+            const li = e.target.closest('li');
+            if (!li || li.classList.contains('no-results')) return;
+            input.value = li.dataset.value;
+            close();
+        });
+
+        /* close when clicking outside */
+        document.addEventListener('click', e => {
+            if (!wrap.contains(e.target)) close();
+        });
+
+        /* keyboard nav */
+        searchBox.addEventListener('keydown', e => {
+            const visible = allItems.filter(li => !li.classList.contains('hidden'));
+            const cur = listEl.querySelector('.highlighted');
+            let idx = visible.indexOf(cur);
+            if (e.key === 'ArrowDown') {
+                e.preventDefault();
+                if (cur) cur.classList.remove('highlighted');
+                idx = (idx + 1) % visible.length;
+                visible[idx]?.classList.add('highlighted');
+                visible[idx]?.scrollIntoView({ block: 'nearest' });
+            } else if (e.key === 'ArrowUp') {
+                e.preventDefault();
+                if (cur) cur.classList.remove('highlighted');
+                idx = (idx - 1 + visible.length) % visible.length;
+                visible[idx]?.classList.add('highlighted');
+                visible[idx]?.scrollIntoView({ block: 'nearest' });
+            } else if (e.key === 'Enter') {
+                e.preventDefault();
+                const highlighted = listEl.querySelector('.highlighted');
+                if (highlighted) {
+                    input.value = highlighted.dataset.value;
+                    close();
+                }
+            } else if (e.key === 'Escape') {
+                close();
+            }
+        });
+    }
+
+    document.querySelectorAll('.city-dropdown-wrap').forEach(initDropdown);
 });
 </script>
 {% endblock %}
