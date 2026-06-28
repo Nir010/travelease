@@ -9,26 +9,40 @@
             <div class="card border-0 shadow-lg rounded-4">
                 <div class="card-body p-4 p-lg-5">
                     <div class="text-center mb-4">
-                        <i class="bi bi-shield-check display-4 text-success"></i>
-                        <h3 class="fw-bold mt-2">Email Verification</h3>
-                        <p class="text-muted">
+                        <div class="otp-icon-wrap mx-auto mb-3">
+                            <i class="bi bi-envelope-check-fill"></i>
+                        </div>
+                        <h3 class="fw-bold">Check Your Email</h3>
+                        <p class="text-muted mb-0">
                             We've sent a 6-digit OTP to<br>
-                            <strong>{{ email }}</strong>
+                            <strong class="text-primary">{{ email }}</strong>
                         </p>
+                        <small class="text-muted">Check your spam/junk folder if not seen.</small>
                     </div>
+
+                    {% if messages %}
+                    {% for msg in messages %}
+                    <div class="alert alert-{{ msg.tags|default:'info' }} rounded-3 py-2 small mb-3" role="alert">
+                        {{ msg }}
+                    </div>
+                    {% endfor %}
+                    {% endif %}
 
                     <form method="POST" action="{% url 'accounts:verify_otp' %}">
                         {% csrf_token %}
 
                         <div class="mb-4">
-                            <label class="form-label fw-semibold">Enter OTP</label>
-                            <div class="input-group input-group-lg">
-                                <span class="input-group-text"><i class="bi bi-key"></i></span>
-                                <input type="text" name="otp" class="form-control text-center fs-4"
-                                       placeholder="000000" maxlength="6" pattern="[0-9]{6}"
-                                       required autofocus style="letter-spacing: 8px;">
+                            <label class="form-label fw-semibold text-center d-block">Enter 6-Digit OTP</label>
+                            <div class="otp-input-wrap">
+                                <input type="text" name="otp" id="otpInput"
+                                       class="form-control text-center otp-input"
+                                       placeholder="0  0  0  0  0  0"
+                                       maxlength="6" pattern="[0-9]{6}"
+                                       inputmode="numeric" required autofocus>
                             </div>
-                            <small class="text-muted">Enter the 6-digit code from your email.</small>
+                            <small class="text-muted d-block text-center mt-2">
+                                <i class="bi bi-clock me-1"></i>OTP expires in 10 minutes
+                            </small>
                         </div>
 
                         <button type="submit" class="btn btn-success btn-lg w-100 shadow-sm mb-3">
@@ -36,9 +50,14 @@
                         </button>
                     </form>
 
-                    <div class="text-center">
-                        <p class="text-muted mb-2">Didn't receive the code?</p>
-                        <a href="{% url 'accounts:resend_otp' %}" class="btn btn-outline-primary btn-sm">
+                    <!-- Resend OTP -->
+                    <div class="text-center border-top pt-3 mt-1">
+                        <p class="text-muted small mb-2">Didn't receive the code?</p>
+                        <div id="resendWrap">
+                            <span class="text-muted small">Resend in <strong id="countdown">60</strong>s</span>
+                        </div>
+                        <a href="{% url 'accounts:resend_otp' %}" id="resendBtn"
+                           class="btn btn-outline-primary btn-sm d-none">
                             <i class="bi bi-arrow-repeat me-1"></i> Resend OTP
                         </a>
                     </div>
@@ -47,4 +66,52 @@
         </div>
     </div>
 </div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.otp-icon-wrap {
+    width: 70px; height: 70px; border-radius: 50%;
+    background: linear-gradient(135deg, #d1fae5, #a7f3d0);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 2rem; color: #059669;
+    box-shadow: 0 4px 16px rgba(5,150,105,0.2);
+}
+.otp-input {
+    font-size: 2rem; font-weight: 700; letter-spacing: 12px;
+    border: 2px solid #dee2e6; border-radius: 12px;
+    padding: 14px 20px; background: #f8faff;
+    transition: border-color .2s, box-shadow .2s;
+}
+.otp-input:focus {
+    border-color: #198754;
+    box-shadow: 0 0 0 3px rgba(25,135,84,.15);
+    background: #fff;
+}
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Only allow digits in OTP input
+document.getElementById('otpInput').addEventListener('input', function() {
+    this.value = this.value.replace(/\D/g, '').slice(0, 6);
+});
+
+// Countdown timer for resend button
+let seconds = 60;
+const countdownEl = document.getElementById('countdown');
+const resendWrap  = document.getElementById('resendWrap');
+const resendBtn   = document.getElementById('resendBtn');
+
+const timer = setInterval(() => {
+    seconds--;
+    countdownEl.textContent = seconds;
+    if (seconds <= 0) {
+        clearInterval(timer);
+        resendWrap.classList.add('d-none');
+        resendBtn.classList.remove('d-none');
+    }
+}, 1000);
+</script>
 {% endblock %}

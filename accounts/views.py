@@ -257,7 +257,15 @@ def login_view(request):
         else:
             messages.error(request, 'Invalid username or password.')
 
-    return render(request, 'accounts/login.html')
+    # Check if Google OAuth is configured (SocialApp exists for google)
+    google_enabled = False
+    try:
+        from allauth.socialaccount.models import SocialApp
+        google_enabled = SocialApp.objects.filter(provider='google').exists()
+    except Exception:
+        pass
+
+    return render(request, 'accounts/login.html', {'google_enabled': google_enabled})
 
 
 # =============================================

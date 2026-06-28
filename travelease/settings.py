@@ -56,6 +56,13 @@ INSTALLED_APPS = [
     'django.contrib.sessions',       # Session management
     'django.contrib.messages',       # Flash messages framework
     'django.contrib.staticfiles',    # Static file handling (CSS, JS, images)
+    'django.contrib.sites',          # Required by django-allauth
+
+    # django-allauth (Google OAuth)
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
+    'allauth.socialaccount.providers.google',
 
     # Custom apps
     'booking',    # Main booking app: buses, flights, search, booking, tickets
@@ -73,6 +80,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',# User authentication
     'django.contrib.messages.middleware.MessageMiddleware',   # Flash messages
     'django.middleware.clickjacking.XFrameOptionsMiddleware', # Clickjacking protection
+    'allauth.account.middleware.AccountMiddleware',           # allauth session management
 ]
 
 # ROOT_URLCONF points to the main URL routing file
@@ -233,3 +241,28 @@ DEFAULT_FROM_EMAIL = os.environ.get('EMAIL_HOST_USER', 'noreply@travelease.np')
 OTP_EXPIRY_MINUTES = 10
 # OTP length (number of digits)
 OTP_LENGTH = 6
+
+
+# =============================================
+# DJANGO-ALLAUTH (Google OAuth)
+# =============================================
+SITE_ID = 1
+
+AUTHENTICATION_BACKENDS = [
+    'django.contrib.auth.backends.ModelBackend',
+    'allauth.account.auth_backends.AuthenticationBackend',
+]
+
+SOCIALACCOUNT_PROVIDERS = {
+    'google': {
+        'SCOPE': ['profile', 'email'],
+        'AUTH_PARAMS': {'access_type': 'online'},
+        'OAUTH_PKCE_ENABLED': True,
+    }
+}
+
+# allauth account settings
+ACCOUNT_SIGNUP_FIELDS = ['email*', 'username*', 'password1*', 'password2*']
+ACCOUNT_EMAIL_VERIFICATION = 'none'
+SOCIALACCOUNT_AUTO_SIGNUP = True
+SOCIALACCOUNT_LOGIN_ON_GET = True

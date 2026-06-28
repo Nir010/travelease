@@ -20,21 +20,20 @@ from django.conf.urls.static import static
 
 urlpatterns = [
     # Django Admin Panel (/admin/)
-    # Accessible at http://127.0.0.1:8000/admin/
-    # Used by administrators to manage buses, flights, bookings, users
     path('admin/', admin.site.urls),
 
     # Booking App (/)
-    # Handles: homepage, search buses/flights, seat selection, ticket booking, booking history
     path('', include('booking.urls')),
 
     # Accounts App (/accounts/)
-    # Handles: user registration, login, logout, OTP verification, profile
     path('accounts/', include('accounts.urls')),
 
     # Payment App (/payment/)
-    # Handles: dummy Khalti payment, dummy eSewa payment, payment verification
     path('payment/', include('payment.urls')),
+
+    # django-allauth social auth (/auth/)
+    # Google login will be at /auth/google/login/
+    path('auth/', include('allauth.urls')),
 ]
 
 # In DEBUG mode, Django serves media files directly
