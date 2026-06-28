@@ -112,40 +112,34 @@ def process_payment(request, booking_id):
     route = booking.get_route()
     departure = booking.get_departure_datetime()
 
-    email_subject = f'TravelEase - Booking Confirmed! {booking.booking_reference}'
-    email_message = f"""
-╔══════════════════════════════════════════╗
-║     TRAVELEASE - BOOKING CONFIRMED!      ║
-╚══════════════════════════════════════════╝
-
-Booking Reference: {booking.booking_reference}
-Status: CONFIRMED ✅
-
-━━━ PASSENGER DETAILS ━━━
-Name: {booking.passenger_name}
-Email: {booking.passenger_email}
-Phone: {booking.passenger_phone}
-Seat Number: {booking.seat_number}
-
-━━━ JOURNEY DETAILS ━━━
-Transport: {transport_name}
-Route: {route}
-Departure: {departure}
-Booking Type: {booking.booking_type}
-
-━━━ PAYMENT DETAILS ━━━
-Amount: NPR {booking.total_price}
-Payment Method: {payment_method}
-Transaction ID: {payment.transaction_id}
-Payment Status: SUCCESS
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-Thank you for choosing TravelEase!
-For any queries, contact support@travelease.com
-
-Safe travels! ✈️🚌
-"""
+    booking_type_label = 'Bus' if booking.booking_type == 'BUS' else 'Flight'
+    email_subject = f'TravelEase Booking Confirmed — {booking.booking_reference}'
+    email_message = (
+        f"Dear {booking.passenger_name},\n\n"
+        f"Your {booking_type_label} booking has been confirmed!\n\n"
+        f"{'='*44}\n"
+        f"  BOOKING REFERENCE: {booking.booking_reference}\n"
+        f"{'='*44}\n\n"
+        f"PASSENGER DETAILS\n"
+        f"  Name   : {booking.passenger_name}\n"
+        f"  Email  : {booking.passenger_email}\n"
+        f"  Phone  : {booking.passenger_phone}\n"
+        f"  Seat   : {booking.seat_number}\n\n"
+        f"JOURNEY DETAILS\n"
+        f"  {booking_type_label}    : {transport_name}\n"
+        f"  Route  : {route}\n"
+        f"  Departs: {departure}\n\n"
+        f"PAYMENT DETAILS\n"
+        f"  Amount : NPR {booking.total_price}\n"
+        f"  Method : {payment_method}\n"
+        f"  Txn ID : {payment.transaction_id}\n"
+        f"  Status : SUCCESSFUL\n\n"
+        f"{'='*44}\n\n"
+        f"Thank you for choosing TravelEase!\n"
+        f"For support, email us at {settings.DEFAULT_FROM_EMAIL}\n\n"
+        f"Safe travels!\n"
+        f"TravelEase Team\n"
+    )
     try:
         send_mail(
             subject=email_subject,
@@ -155,7 +149,7 @@ Safe travels! ✈️🚌
             fail_silently=False,
         )
     except Exception:
-        pass  # Email delivery is best-effort; booking is already confirmed
+        pass  # Booking is confirmed even if email fails
 
     messages.success(request, f'Payment successful! Booking {booking.booking_reference} confirmed.')
     return redirect('booking:booking_confirmation', booking_id=booking.id)
