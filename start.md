@@ -6,4 +6,4 @@ python manage.py runserver
 
 python manage.py startapp travelease
 
-python manage.py runserver
+./venv/bin/python manage.py runserver
