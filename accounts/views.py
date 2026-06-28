@@ -21,6 +21,9 @@ from django.utils import timezone
 from .models import UserProfile, OTPVerification
 from booking.models import Booking
 import datetime
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 # =============================================
@@ -113,7 +116,8 @@ def register_view(request):
                 fail_silently=False,
             )
             messages.success(request, f'Account created! A verification OTP has been sent to {email}. Please check your inbox.')
-        except Exception:
+        except Exception as e:
+            logger.error("Failed to send verification OTP email to %s: %s", email, e, exc_info=True)
             messages.success(request, f'Account created! Please verify your email to continue.')
             messages.warning(request, 'Could not send OTP email — please contact support.')
 
@@ -170,7 +174,7 @@ def verify_otp_view(request):
             user.profile.save()
 
             # Auto-login the user (no need to re-enter credentials after verification)
-            login(request, user)
+            login(request, user, backend='django.contrib.auth.backends.ModelBackend')
 
             # Clear the session
             del request.session['pending_verification_user_id']
@@ -211,16 +215,19 @@ def resend_otp_view(request):
     )
 
     # Send email
-    send_mail(
-        subject='TravelEase - New Email Verification OTP',
-        message=f'Your new OTP for TravelEase is: {otp.otp_code}\n\n'
-                f'This OTP expires in {settings.OTP_EXPIRY_MINUTES} minutes.',
-        from_email=settings.DEFAULT_FROM_EMAIL,
-        recipient_list=[user.email],
-        fail_silently=False,
-    )
-
-    messages.success(request, f'New OTP sent to {user.email}.')
+    try:
+        send_mail(
+            subject='TravelEase - New Email Verification OTP',
+            message=f'Your new OTP for TravelEase is: {otp.otp_code}\n\n'
+                    f'This OTP expires in {settings.OTP_EXPIRY_MINUTES} minutes.',
+            from_email=settings.DEFAULT_FROM_EMAIL,
+            recipient_list=[user.email],
+            fail_silently=False,
+        )
+        messages.success(request, f'New OTP sent to {user.email}.')
+    except Exception as e:
+        logger.error("Failed to send resend OTP email to %s: %s", user.email, e, exc_info=True)
+        messages.warning(request, 'Could not send new OTP email — please try again or contact support.')
     return redirect('accounts:verify_otp')
 
 

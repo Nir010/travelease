@@ -13,10 +13,14 @@ This file contains ALL Django settings including:
 
 import os
 from pathlib import Path
+from dotenv import load_dotenv
 
 # BASE_DIR = the root folder of the project (TravelEase/)
 # Every file path in Django is built relative to this
 BASE_DIR = Path(__file__).resolve().parent.parent
+
+# Load environment variables from .env file
+load_dotenv(BASE_DIR / '.env')
 
 # SECURITY WARNING: keep the secret key used in production secret!
 # This key is used for cryptographic signing (sessions, CSRF tokens, password resets)
@@ -223,15 +227,21 @@ LOGOUT_REDIRECT_URL = 'booking:home'
 #   - Booking confirmation → sent to the user's email
 #   - Sender is always travelease.np@gmail.com
 
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER', '')
-EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD', '')
+EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER', '').strip()
+# Sanitize password: strip spaces (Gmail App Passwords might be provided as 'abcd efgh ijkl mnop')
+EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD', '').strip().replace(' ', '')
+
+# Fallback to console email backend when in DEBUG mode if credentials are not configured
+if DEBUG and not (EMAIL_HOST_USER and EMAIL_HOST_PASSWORD):
+    EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+else:
+    EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 
 # Default "from" address for all outgoing emails
-DEFAULT_FROM_EMAIL = os.environ.get('EMAIL_HOST_USER', 'noreply@travelease.np')
+DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL', EMAIL_HOST_USER or 'noreply@travelease.np')
 
 
 # =============================================

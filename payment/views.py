@@ -15,6 +15,9 @@ from django.contrib import messages
 from django.core.mail import send_mail
 from django.conf import settings
 from booking.models import Booking, Payment
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 # =============================================
@@ -148,8 +151,10 @@ def process_payment(request, booking_id):
             recipient_list=[booking.passenger_email],
             fail_silently=False,
         )
-    except Exception:
-        pass  # Booking is confirmed even if email fails
+    except Exception as e:
+        # Booking is confirmed even if email fails, but log the failure
+        logger.error("Failed to send booking confirmation email to %s for booking %s: %s", 
+                     booking.passenger_email, booking.booking_reference, e, exc_info=True)
 
     messages.success(request, f'Payment successful! Booking {booking.booking_reference} confirmed.')
     return redirect('booking:booking_confirmation', booking_id=booking.id)
