@@ -1,5 +1,5 @@
 ## venv active  
-~/Downloads/ggjhjhjhj/travelease$ source venv/bin/activate
+source venv/bin/activate
 
 ## launch
 python manage.py runserver

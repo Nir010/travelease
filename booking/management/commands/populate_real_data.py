@@ -16,7 +16,7 @@ from datetime import date, timedelta
 import random
 
 
-DAYS = 3   # generate records for today + 2 more days → ~200 total records
+DAYS = 1   # generate records for today so they are visible immediately
 
 
 class Command(BaseCommand):
@@ -104,7 +104,7 @@ class Command(BaseCommand):
         created = 0
         for idx, (name, prefix, btype, frm, to, dep, arr, dur, price, seats, pickup, dropoff, amenities) in enumerate(routes, 1):
             for day in range(DAYS):
-                d = today + timedelta(days=day)
+                d = today
                 num = f"{prefix}-{d.strftime('%d%m')}"
                 if Bus.objects.filter(bus_number=num).exists():
                     continue
@@ -180,7 +180,7 @@ class Command(BaseCommand):
         created = 0
         for (num, airline, ftype, frm, to, dep, arr, dur, price, seats, terminal, gate) in routes:
             for day in range(DAYS):
-                d = today + timedelta(days=day)
+                d = today
                 flight_num = f"{num}-{d.strftime('%d%m')}"
                 if Flight.objects.filter(flight_number=flight_num).exists():
                     continue

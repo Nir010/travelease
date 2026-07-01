@@ -109,10 +109,9 @@ class Command(BaseCommand):
     # This ensures all generated records are in the future (bookable).
     # =========================================================================
     @staticmethod
-    def random_future_date(days_from=0, days_to=60):
-        today = date.today()
-        offset = random.randint(days_from, days_to)
-        return today + timedelta(days=offset)
+    def random_future_date(days_from=0, days_to=0):
+        """Return today's date so generated schedules are visible immediately."""
+        return date.today()
 
     # =========================================================================
     # HELPER: Random time string
